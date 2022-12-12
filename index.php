@@ -7,17 +7,19 @@
     <link href="https://releases.transloadit.com/uppy/v3.3.1/uppy.min.css" rel="stylesheet">
     <style>
         #ship-info, #drag-drop-area, #drag-drop-area.uppy-Dashboard-inner {
-            padding-top: 25px;
-            padding-bottom: 25px;
-            margin: auto;
+            margin: 25px auto;
             width: 65%;
         }
         .ship-name {
             text-transform: uppercase;
             text-align: center;
             border: 0px !important;
+            background-color: #A9A9A9;
         }
-        #ship-info {
+        .category {
+            text-align: center;
+            border: 0px !important;
+            background-color: #E5E4E2;
         }
     </style>
   </head>
@@ -54,10 +56,31 @@
                           "<tr><th>Type</th><td>" + data.body["Type"] + "</td></tr>";
             delete data.body["Name"];
             delete data.body["Type"];
+            var objects = {};
+            var nonobjects = {};
             for (var key in data.body) {
                 if (data.body.hasOwnProperty(key)) {
-                    content += "<tr><th>" + key + "</th><td>" + data.body[key] + "</td></tr>";
-                    console.log(key + " -> " + data.body[key]);
+                    if( typeof data.body[key] === 'object' &&
+                        !Array.isArray(data.body[key]) &&
+                        data.body[key] !== null
+                    ) {
+                        objects[key] = data.body[key];
+                    } else {
+                        nonobjects[key] = data.body[key];
+                    }
+                }
+            }
+            for (var key in nonobjects) {
+                content += "<tr><th>" + key + "</th><td>" + data.body[key] + "</td></tr>";
+                console.log(key + " -> " + data.body[key]);
+            }
+            for (var key in objects) {
+                content += "<tr><th colspan=2 class='category'>"+key+"</th></tr>";
+                for (var subkey in data.body[key]) {
+                    if (data.body[key].hasOwnProperty(subkey)) {
+                        content += "<tr><th>" + subkey + "</th><td>" + data.body[key][subkey] + "</td></tr>";
+                        console.log(subkey + " -> " + data.body[key][subkey]);
+                    }
                 }
             }
             document.getElementById("ship-info").innerHTML = content;
