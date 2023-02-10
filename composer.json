@@ -43,4 +43,3 @@
         "test-timing": "phpunit --log-junit coverage/junit.xml"
     }
 }
-}
