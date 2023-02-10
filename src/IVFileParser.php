@@ -1,6 +1,6 @@
 <?php
 
-namespace IVParser;
+namespace Totengeist\IVParser;
 
 class Section {
     public $path = null;

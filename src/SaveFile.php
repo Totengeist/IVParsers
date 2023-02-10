@@ -1,9 +1,9 @@
 <?php
 
-namespace IVParser;
+namespace Totengeist\IVParser;
 
-use IVParser\IVFile;
-use IVParser\ShipFile;
+use Totengeist\IVParser\IVFile;
+use Totengeist\IVParser\ShipFile;
 
 class SaveFile extends IVFile {
     public $info = [];
