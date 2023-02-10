@@ -1,0 +1,46 @@
+{
+    "name": "totengeist/iv-parsers",
+    "description": "Introversion save file parsers.",
+    "type": "library",
+    "require-dev": {
+        "phpunit/phpunit": "^9.4||^8.5",
+        "friendsofphp/php-cs-fixer": "^2.2.20"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Totengeist",
+            "email": "me@totengeist.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "classmap": [
+            "src"
+        ],
+        "psr-4": {
+            "Totengeist\\IVParsers\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "coverage": [
+            "@putenv XDEBUG_MODE=coverage",
+            "phpunit --verbose --fail-on-warning --coverage-text"
+        ],
+        "coverage-report": [
+            "@putenv XDEBUG_MODE=coverage",
+            "phpunit --verbose --fail-on-warning --coverage-text --coverage-html coverage --testdox-html coverage/testdox.html"
+        ],
+        "style-check": "php-cs-fixer fix --dry-run --verbose --diff",
+        "style-fix": "php-cs-fixer fix --verbose",
+        "test": "phpunit --verbose --fail-on-warning",
+        "testOnly": "phpunit --colors --filter",
+        "test-timing": "phpunit --log-junit coverage/junit.xml"
+    }
+}
+}
