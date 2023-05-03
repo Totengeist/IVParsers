@@ -61,10 +61,10 @@ class Section {
                             $section_content = trim($matches[2]);
                         }
                         if ($section_content == '') {
-                            $this->addSection($section_title, new Section($this->path . '/' . $section_title, []));
+                            $this->add_section($section_title, new Section($this->path . '/' . $section_title, []));
                         } else {
                             preg_match_all('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/i', $section_content, $content_check);
-                            $this->addSection($section_title, new Section($this->path . '/' . $section_title, $content_check[0]));
+                            $this->add_section($section_title, new Section($this->path . '/' . $section_title, $content_check[0]));
                         }
                     } else {
                         // section continues
@@ -87,7 +87,7 @@ class Section {
             } else {
                 // in a section
                 if (strpos($line, $pretext . 'END') === 0) {
-                    $this->addSection($key, $this->checkSubfile($this->path . '/' . $key, array_slice($structure, $start, $i - $start), $level+1, $subfiles));
+                    $this->add_section($key, $this->check_subfile($this->path . '/' . $key, array_slice($structure, $start, $i - $start), $level+1, $subfiles));
                     $start = -1;
                 }
             }
@@ -95,7 +95,7 @@ class Section {
         $this->content = $content;
     }
 
-    public function checkSubfile($path, $content, $level, $subfiles) {
+    public function check_subfile($path, $content, $level, $subfiles) {
         if (in_array($path, array_keys($subfiles))) {
             return new $subfiles[$path]($content, $level, $subfiles);
         }
@@ -106,7 +106,7 @@ class Section {
     /**
      * Returns a Section object or an array of Section objects.
      */
-    public function addSection($key, $object) {
+    public function add_section($key, $object) {
         if (isset($this->sections[$key])) {
             if (gettype($this->sections[$key]) == 'array') {
                 $this->sections[$key][] = $object;
