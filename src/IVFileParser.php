@@ -134,8 +134,12 @@ class Section {
 
     public function get_section($section_path) {
         $path = explode('/', $section_path);
-        $content = $this;
+        $content = $this; // Relative pathing starts from the current section.
+        // Move down the path until we find what we want or something is missing.
         foreach ($path as $section) {
+            if( !isset( $content->sections[$section] ) ) {
+                return null;
+            }
             $content = $content->sections[$section];
         }
 

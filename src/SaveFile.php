@@ -63,7 +63,11 @@ class SaveFile extends IVFile {
     public function get_missions() {
         if( $this->section_exists("Layer") ) {
             $missions = [];
-            foreach( $this->get_section("Missions/Missions")->sections as $mission) {
+            $section = $this->get_section("Missions/Missions");
+            if( $section == null ) {
+                return [];
+            }
+            foreach( $section->sections as $mission) {
                 $missions[] = $mission;
             }
             return $missions;

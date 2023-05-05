@@ -18,7 +18,7 @@ class ShipFile extends IVFile {
     const RESOURCES = ['Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium'];
 
     public function __construct($structure = null, $level = 0, $subfiles = []) {
-        if( !$this->is_ship($structure, $level) ) {
+        if( !self::is_ship($structure, $level) ) {
             throw new \Exception('This is not a ship file.');
         }
         parent::__construct($structure, $level, $subfiles);
@@ -26,7 +26,7 @@ class ShipFile extends IVFile {
         $this->get_info();
     }
     
-    public function is_ship($structure, $level) {
+    public static function is_ship($structure, $level) {
         if( is_string($structure) ) {
             $structure = preg_split('/\r?\n/', $structure);
         }
@@ -52,7 +52,7 @@ class ShipFile extends IVFile {
         foreach (self::RESOURCES as $resource) {
             $this->info['TankCapacity'][$resource] = 0;
         }
-        $this->info['Mass'] = (float) $this->content['Mass'];
+        $this->info['Mass'] = isset($this->content['Mass']) ? (float) $this->content['Mass'] : 0;
         foreach (self::WEAPONS as $weapon) {
             if (!isset($this->info[$weapon])) {
                 $this->info["Weapons"][$weapon] = $this->get_object_count($weapon);
@@ -78,7 +78,9 @@ class ShipFile extends IVFile {
         }
         foreach (self::TANKS as $tank) {
             foreach ($this->get_object_content($tank) as $output) {
-                $this->info['TankCapacity'][$output['Resource']] += (float) $output['Capacity'];
+                if( isset( $output['Resource'] ) && isset( $output['Capacity'] ) ) {
+                    $this->info['TankCapacity'][$output['Resource']] += (float) $output['Capacity'];
+                }
             }
         }
         foreach ($this->get_cell_info() as $key => $cell) {
@@ -92,22 +94,28 @@ class ShipFile extends IVFile {
     }
 
     public function get_cell_info() {
-        $types = ['.' => []];
+        $types = [];
         $cells = [];
         foreach ($this->get_section('GridMap/Palette')->sections as $cell) {
             $path = explode('/', $cell->path);
             $name = $path[count($path)-1];
+            // If the name is empty, the character is '/' and was exploded.
             if ($name == '') {
                 $name = '/';
             }
-            foreach ($cell->content as $key => $type) {
-                if (in_array($key, self::CELLS)) {
-                    $types[$name][] = $key;
-                } elseif (in_array($key, self::CELL_TYPES)) {
-                    $key = 'Storage ' . $type;
-                    $types[$name][] = $key;
-                } else {
-                    $types[$name] = [];
+            // If the cell is empty space, it contains no content.
+            if( count($cell->content) == 0 ) {
+                $types[$name] = [];
+            } else {
+                foreach ($cell->content as $key => $type) {
+                    if (in_array($key, self::CELLS)) {
+                        $types[$name][] = $key;
+                    } elseif (in_array($key, self::CELL_TYPES)) {
+                        $key = 'Storage ' . $type;
+                        $types[$name][] = $key;
+                    } else {
+                        $types[$name] = [];
+                    }
                 }
             }
         }
@@ -172,7 +180,9 @@ class ShipFile extends IVFile {
         ksort($info);
         $info['Weapons'] = 0;
         foreach (self::WEAPONS as $weapon) {
-            $info['Weapons'] += $info[$weapon];
+            if( isset( $info[$weapon] ) ) {
+                $info['Weapons'] += $info[$weapon];
+            }
         }
         $info['PowerGenerators'] = 0;
         foreach (self::POWER as $gen) {
