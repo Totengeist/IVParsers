@@ -2,8 +2,6 @@
 
 namespace Totengeist\IVParser;
 
-use Totengeist\IVParser\IVFile;
-
 class ShipFile extends IVFile {
     public $info = [];
 
@@ -18,23 +16,24 @@ class ShipFile extends IVFile {
     const RESOURCES = ['Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium'];
 
     public function __construct($structure = null, $level = 0, $subfiles = []) {
-        if( !self::is_ship($structure, $level) ) {
+        if (!self::is_ship($structure, $level)) {
             throw new \Exception('This is not a ship file.');
         }
         parent::__construct($structure, $level, $subfiles);
 
         $this->get_info();
     }
-    
+
     public static function is_ship($structure, $level) {
-        if( is_string($structure) ) {
+        if (is_string($structure)) {
             $structure = preg_split('/\r?\n/', $structure);
         }
-        foreach( $structure as $line ) {
+        foreach ($structure as $line) {
             if (strpos($line, str_repeat('    ', $level) . 'BEGIN Habitation') === 0) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -55,9 +54,9 @@ class ShipFile extends IVFile {
         $this->info['Mass'] = isset($this->content['Mass']) ? (float) $this->content['Mass'] : 0;
         foreach (self::WEAPONS as $weapon) {
             if (!isset($this->info[$weapon])) {
-                $this->info["Weapons"][$weapon] = $this->get_object_count($weapon);
+                $this->info['Weapons'][$weapon] = $this->get_object_count($weapon);
             } else {
-                $this->info["Weapons"][$weapon] += $this->get_object_count($weapon);
+                $this->info['Weapons'][$weapon] += $this->get_object_count($weapon);
             }
         }
         foreach (self::ENGINES as $engine) {
@@ -78,14 +77,14 @@ class ShipFile extends IVFile {
         }
         foreach (self::TANKS as $tank) {
             foreach ($this->get_object_content($tank) as $output) {
-                if( isset( $output['Resource'] ) && isset( $output['Capacity'] ) ) {
+                if (isset($output['Resource']) && isset($output['Capacity'])) {
                     $this->info['TankCapacity'][$output['Resource']] += (float) $output['Capacity'];
                 }
             }
         }
         foreach ($this->get_cell_info() as $key => $cell) {
-            $shortkey = str_replace("Storage ", "", $key);
-            if( $key == $shortkey ) {
+            $shortkey = str_replace('Storage ', '', $key);
+            if ($key == $shortkey) {
                 $this->info['Structure'][$key] = $cell;
             } else {
                 $this->info['Storage'][$shortkey] = $cell;
@@ -104,7 +103,7 @@ class ShipFile extends IVFile {
                 $name = '/';
             }
             // If the cell is empty space, it contains no content.
-            if( count($cell->content) == 0 ) {
+            if (count($cell->content) == 0) {
                 $types[$name] = [];
             } else {
                 foreach ($cell->content as $key => $type) {
@@ -174,13 +173,13 @@ class ShipFile extends IVFile {
 
         return $content;
     }
-    
+
     public function print_info() {
         $info = $this->info;
         ksort($info);
         $info['Weapons'] = 0;
         foreach (self::WEAPONS as $weapon) {
-            if( isset( $info[$weapon] ) ) {
+            if (isset($info[$weapon])) {
                 $info['Weapons'] += $info[$weapon];
             }
         }
@@ -188,7 +187,7 @@ class ShipFile extends IVFile {
         foreach (self::POWER as $gen) {
             $info['PowerGenerators'] += $info[$gen];
         }
-        $template = "Your ship is named %s. It has %3d weapons and %3d engines. Its %3d power generators generate %01.2f Mw.";
+        $template = 'Your ship is named %s. It has %3d weapons and %3d engines. Its %3d power generators generate %01.2f Mw.';
         echo sprintf($template,
             $info['Name'],
             $info['Weapons'],
