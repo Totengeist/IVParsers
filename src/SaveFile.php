@@ -45,7 +45,7 @@ class SaveFile extends IVFile {
      *
      * @param array $structure the structure of the section and its subsections
      * @param int   $level     the indentation level of the section in the original file
-     * 
+     *
      * @return bool is it a valid save file?
      */
     public function is_save($structure, $level) {
@@ -63,7 +63,7 @@ class SaveFile extends IVFile {
 
     /**
      * Retrieve ships stored in the save file.
-     * 
+     *
      * @return array the ship files
      */
     public function get_layers() {
@@ -81,7 +81,7 @@ class SaveFile extends IVFile {
 
     /**
      * Retrieve ships stored in the save file by categorization.
-     * 
+     *
      * @return array the ship files
      */
     public function get_ships($type = null) {
@@ -105,7 +105,7 @@ class SaveFile extends IVFile {
 
     /**
      * Retrieve missions from all ships stored in the save file.
-     * 
+     *
      * @return array the mission information
      */
     public function get_missions() {
@@ -127,7 +127,7 @@ class SaveFile extends IVFile {
 
     /**
      * Retrieve basic information about the galaxy.
-     * 
+     *
      * @return array the galaxy information
      */
     public function get_galaxy_info() {

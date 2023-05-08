@@ -43,7 +43,7 @@ class ShipFile extends IVFile {
      *
      * @param array $structure the structure of the section and its subsections
      * @param int   $level     the indentation level of the section in the original file
-     * 
+     *
      * @return bool is it a valid ship file?
      */
     public static function is_ship($structure, $level) {
@@ -61,7 +61,7 @@ class ShipFile extends IVFile {
 
     /**
      * Collect the relevant ship info.
-     * 
+     *
      * This should be replaced by multiple functions and not use a class member variable for
      * gathering.
      */
@@ -122,10 +122,10 @@ class ShipFile extends IVFile {
 
     /**
      * Get the number of cells per type.
-     * 
+     *
      * Combine the GridMap/Palette and GridMap/Cells regions into one array containing the relevant
      * information.
-     * 
+     *
      * @return array the cell counts by type
      */
     public function get_cell_info() {
@@ -180,9 +180,9 @@ class ShipFile extends IVFile {
 
     /**
      * Retrieve the count of a certain type of object on the ship.
-     * 
+     *
      * @param string $label the object to retrieve
-     * 
+     *
      * @return int the number of objects of the given type
      */
     public function get_object_count($label) {
@@ -201,10 +201,10 @@ class ShipFile extends IVFile {
 
     /**
      * Retrieve the content of a certain type of object on the ship.
-     * 
+     *
      * @param string $label the object to retrieve
-     * @param string $item a particular property of the objects to retrieve
-     * 
+     * @param string $item  a particular property of the objects to retrieve
+     *
      * @return array the content information
      */
     public function get_object_content($label, $item = null) {

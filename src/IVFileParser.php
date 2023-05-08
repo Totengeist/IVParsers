@@ -89,7 +89,7 @@ class Section {
                         // section ends in the same line
                         preg_match('/^ *BEGIN ([^ "]*|"[^"]*")(?: +(.*))? +END *$/i', $line, $matches);
                         if (count($matches) == 0) {
-                            echo __LINE__ . $line;
+                            throw new ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
                         }
                         $section_title = trim($matches[1]);
                         preg_match("/^\"\[i ([0-9]+)\]\"$/i", $section_title, $title_check);
@@ -120,10 +120,9 @@ class Section {
                 } else {
                     preg_match('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/', trim($line), $matches);
                     if (count($matches) == 0) {
-                        echo __LINE__ . ' ' . $i . ' ' . $line;
-                    } else {
-                        $content[trim($matches['name'])] = trim(trim($matches['value']), '"');
+                        throw new ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
                     }
+                    $content[trim($matches['name'])] = trim(trim($matches['value']), '"');
                 }
             } else {
                 // in a section
