@@ -2,6 +2,9 @@
 
 namespace Totengeist\IVParser;
 
+/**
+ * Classes necessary for processing a `.ship` file.
+ */
 class ShipFile extends IVFile {
     public $info = [];
 
@@ -15,6 +18,15 @@ class ShipFile extends IVFile {
     const TANKS = ['TinyTank', 'Small Tank', 'Tank'];
     const RESOURCES = ['Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium'];
 
+    /**
+     * An intermediary constructor.
+     *
+     * Verify the file is a valid ship file before calling the standard constructor.
+     *
+     * @param array $structure the structure of the section and its subsections
+     * @param int   $level     the indentation level of the section in the original file
+     * @param array $subfiles  an array of IVFile-inheriting classes and their paths
+     */
     public function __construct($structure = null, $level = 0, $subfiles = []) {
         if (!self::is_ship($structure, $level)) {
             throw new \Exception('This is not a ship file.');
@@ -24,6 +36,16 @@ class ShipFile extends IVFile {
         $this->get_info();
     }
 
+    /**
+     * Verify the given structure is a save file.
+     *
+     * We check for the Habitation section as a unique section to save files.
+     *
+     * @param array $structure the structure of the section and its subsections
+     * @param int   $level     the indentation level of the section in the original file
+     * 
+     * @return bool is it a valid ship file?
+     */
     public static function is_ship($structure, $level) {
         if (is_string($structure)) {
             $structure = preg_split('/\r?\n/', $structure);
@@ -37,6 +59,12 @@ class ShipFile extends IVFile {
         return false;
     }
 
+    /**
+     * Collect the relevant ship info.
+     * 
+     * This should be replaced by multiple functions and not use a class member variable for
+     * gathering.
+     */
     public function get_info() {
         $this->info = [];
         $this->info['Type'] = $this->content['Type'];
@@ -92,6 +120,14 @@ class ShipFile extends IVFile {
         }
     }
 
+    /**
+     * Get the number of cells per type.
+     * 
+     * Combine the GridMap/Palette and GridMap/Cells regions into one array containing the relevant
+     * information.
+     * 
+     * @return array the cell counts by type
+     */
     public function get_cell_info() {
         $types = [];
         $cells = [];
@@ -142,12 +178,19 @@ class ShipFile extends IVFile {
         return $cells;
     }
 
+    /**
+     * Retrieve the count of a certain type of object on the ship.
+     * 
+     * @param string $label the object to retrieve
+     * 
+     * @return int the number of objects of the given type
+     */
     public function get_object_count($label) {
-        $count = 0;
         if (!$this->section_exists('Objects')) {
             return 0;
         }
-        foreach ($this->sections['Objects']->sections as $object) {
+        $count = 0;
+        foreach ($this->get_section('Objects')->sections as $object) {
             if ($object->content['Type'] == $label) {
                 $count++;
             }
@@ -156,6 +199,14 @@ class ShipFile extends IVFile {
         return $count;
     }
 
+    /**
+     * Retrieve the content of a certain type of object on the ship.
+     * 
+     * @param string $label the object to retrieve
+     * @param string $item a particular property of the objects to retrieve
+     * 
+     * @return array the content information
+     */
     public function get_object_content($label, $item = null) {
         if (!$this->section_exists('Objects')) {
             return [];
@@ -174,6 +225,9 @@ class ShipFile extends IVFile {
         return $content;
     }
 
+    /**
+     * Debug print fucntion that should be replaced with something more useful.
+     */
     public function print_info() {
         $info = $this->info;
         ksort($info);

@@ -2,11 +2,35 @@
 
 namespace Totengeist\IVParser;
 
+/**
+ * Classes necessary for processing a `.space` file.
+ *
+ * A save file for The Last Starship can contain subfiles such as:
+ *  * ships
+ */
 class SaveFile extends IVFile {
     public $info = [];
 
+    /**
+     * The types of ships available in the game.
+     *
+     *  * FriendlyShip - a player-controlled ship
+     *  * HostileShip - an enemy ship, which will attack player-controlled and neutral ships
+     *  * NeutralShip - an NPC ship controlled by AI
+     *  * ShipForSale - a ship hull available to a shipyard that can be purchased by the player
+     *  * Derelict - a stranded ship that can be looted
+     */
     const SHIPS = ['FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict'];
 
+    /**
+     * An intermediary constructor.
+     *
+     * Verify the file is a valid save file before calling the standard constructor.
+     *
+     * @param array $structure the structure of the section and its subsections
+     * @param int   $level     the indentation level of the section in the original file
+     * @param array $subfiles  an array of IVFile-inheriting classes and their paths
+     */
     public function __construct($structure = null, $level = 0, $subfiles = ['/Layer' => ShipFile::class]) {
         if (!$this->is_save($structure, $level)) {
             throw new \Exception('This is not a save file.');
@@ -14,6 +38,16 @@ class SaveFile extends IVFile {
         parent::__construct($structure, $level, $subfiles);
     }
 
+    /**
+     * Verify the given structure is a save file.
+     *
+     * We check for the Galaxy section as a unique section to save files.
+     *
+     * @param array $structure the structure of the section and its subsections
+     * @param int   $level     the indentation level of the section in the original file
+     * 
+     * @return bool is it a valid save file?
+     */
     public function is_save($structure, $level) {
         if (is_string($structure)) {
             $structure = preg_split('/\r?\n/', $structure);
@@ -27,6 +61,11 @@ class SaveFile extends IVFile {
         return false;
     }
 
+    /**
+     * Retrieve ships stored in the save file.
+     * 
+     * @return array the ship files
+     */
     public function get_layers() {
         if ($this->section_exists('Layer')) {
             $section = $this->get_section('Layer');
@@ -40,6 +79,11 @@ class SaveFile extends IVFile {
         return [];
     }
 
+    /**
+     * Retrieve ships stored in the save file by categorization.
+     * 
+     * @return array the ship files
+     */
     public function get_ships($type = null) {
         $ships = [];
         $layers = $this->get_layers();
@@ -59,6 +103,11 @@ class SaveFile extends IVFile {
         return $ships;
     }
 
+    /**
+     * Retrieve missions from all ships stored in the save file.
+     * 
+     * @return array the mission information
+     */
     public function get_missions() {
         if ($this->section_exists('Layer')) {
             $missions = [];
@@ -76,6 +125,11 @@ class SaveFile extends IVFile {
         return [];
     }
 
+    /**
+     * Retrieve basic information about the galaxy.
+     * 
+     * @return array the galaxy information
+     */
     public function get_galaxy_info() {
         $info = [];
         $galaxy = $this->get_section('Galaxy')->content;
@@ -87,6 +141,14 @@ class SaveFile extends IVFile {
         return $info;
     }
 
+    /**
+     * Get the save file's version number.
+     *
+     * Save files during the playtest did not have version number, so we return 0 if no version is
+     * found.
+     *
+     * @return int the version of the save file
+     */
     public function get_save_version() {
         if (isset($this->content['SaveVersion'])) {
             return intval($this->content['SaveVersion']);
@@ -95,6 +157,9 @@ class SaveFile extends IVFile {
         return 0;
     }
 
+    /**
+     * Debug print fucntion that should be replaced with something more useful.
+     */
     public function print_info() {
         if ($this->section_exists('Layer')) {
             $all_ships = count($this->get_layers());
