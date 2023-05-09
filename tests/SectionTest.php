@@ -95,7 +95,7 @@ class SectionTest extends TestCase {
     }
 
     public function testCanAddSubfile() {
-        $section = new Section('', array('Key1 Value1', 'BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'), 0, array('/TestSection' => TestSection::class));
+        $section = new Section('', array('Key1 Value1', 'BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'), 0, array('/TestSection' => "Tests\TestSection"));
         $this->assertTrue($section->section_exists('TestSection'));
         $this->assertEquals(get_class($section->sections['TestSection']), "Tests\TestSection");
     }
