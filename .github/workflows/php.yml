@@ -10,8 +10,8 @@ jobs:
     strategy:
         fail-fast: true
         matrix:
-            php: ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1']
-            runner: ['ubuntu-18.04', 'ubuntu-20.04']
+            php: ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+            runner: ['ubuntu-20.04', 'ubuntu-22.04']
 
     name: PHP ${{ matrix.php }} on ${{ matrix.runner }}
     steps:
