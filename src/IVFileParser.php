@@ -21,7 +21,7 @@ class Section {
     /** The original content used to generate the section. */
     public $content = null;
     /** An array of subsection objects. */
-    public $sections = [];
+    public $sections = array();
 
     /**
      * Create a new Section.
@@ -34,7 +34,7 @@ class Section {
      * @param int    $level    the indentation level of the section in the original file
      * @param array  $subfiles an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($path = null, $content = null, $level = 0, $subfiles = []) {
+    public function __construct($path = null, $content = null, $level = 0, $subfiles = array()) {
         if ($path !== null) {
             $this->path = $path;
         }
@@ -44,6 +44,7 @@ class Section {
     }
 
     // @codeCoverageIgnoreStart
+
     /**
      * Print a "tree" of sections and subsections.
      *
@@ -51,7 +52,7 @@ class Section {
      *
      * @param array $ignore paths to ignore in the tree
      */
-    public function print_section_tree($ignore = []) {
+    public function print_section_tree($ignore = array()) {
         if (in_array($this->path, $ignore)) {
             return;
         }
@@ -66,6 +67,7 @@ class Section {
             }
         }
     }
+
     // @codeCoverageIgnoreEnd
 
     /**
@@ -75,8 +77,8 @@ class Section {
      * @param int   $level    the indentation level of the section in the original file
      * @param array $subfiles an array of IVFile-inheriting classes and their paths
      */
-    public function get_sections($structure, $level = 0, $subfiles = []) {
-        $content = [];
+    public function get_sections($structure, $level = 0, $subfiles = array()) {
+        $content = array();
         $start = -1;
         $key = null;
         for ($i = 0; $i < count($structure); $i++) {
@@ -106,7 +108,7 @@ class Section {
                             $section_content = trim($matches[2]);
                         }
                         if ($section_content == '') {
-                            $this->add_section($section_title, new Section($this->path . '/' . $section_title, []));
+                            $this->add_section($section_title, new Section($this->path . '/' . $section_title, array()));
                         } else {
                             preg_match_all('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/i', $section_content, $content_check);
                             $this->add_section($section_title, new Section($this->path . '/' . $section_title, $content_check[0]));
@@ -175,7 +177,7 @@ class Section {
             if (gettype($this->sections[$key]) == 'array') {
                 $this->sections[$key][] = $object;
             } else {
-                $this->sections[$key] = [$this->sections[$key], $object];
+                $this->sections[$key] = array($this->sections[$key], $object);
             }
         } else {
             $this->sections[$key] = $object;
@@ -243,7 +245,7 @@ class IVFile extends Section {
      * @param int   $level     the indentation level of the section in the original file
      * @param array $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($structure = null, $level = 0, $subfiles = []) {
+    public function __construct($structure = null, $level = 0, $subfiles = array()) {
         if ($structure !== null) {
             if (is_string($structure)) {
                 $structure = preg_split('/\r?\n/', $structure);

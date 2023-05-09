@@ -9,7 +9,7 @@ namespace Totengeist\IVParser;
  *  * ships
  */
 class SaveFile extends IVFile {
-    public $info = [];
+    public $info = array();
 
     /**
      * The types of ships available in the game.
@@ -20,7 +20,7 @@ class SaveFile extends IVFile {
      *  * ShipForSale - a ship hull available to a shipyard that can be purchased by the player
      *  * Derelict - a stranded ship that can be looted
      */
-    const SHIPS = ['FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict'];
+    const SHIPS = array('FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict');
 
     /**
      * An intermediary constructor.
@@ -31,7 +31,7 @@ class SaveFile extends IVFile {
      * @param int   $level     the indentation level of the section in the original file
      * @param array $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($structure = null, $level = 0, $subfiles = ['/Layer' => ShipFile::class]) {
+    public function __construct($structure = null, $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\ShipFile')) {
         if (!$this->is_save($structure, $level)) {
             throw new \Exception('This is not a save file.');
         }
@@ -73,10 +73,10 @@ class SaveFile extends IVFile {
                 return $section;
             }
 
-            return [$section];
+            return array($section);
         }
 
-        return [];
+        return array();
     }
 
     /**
@@ -85,7 +85,7 @@ class SaveFile extends IVFile {
      * @return array the ship files
      */
     public function get_ships($type = null) {
-        $ships = [];
+        $ships = array();
         $layers = $this->get_layers();
 
         foreach ($layers as $ship) {
@@ -97,7 +97,7 @@ class SaveFile extends IVFile {
                 return $ships[$type];
             }
 
-            return [];
+            return array();
         }
 
         return $ships;
@@ -110,10 +110,10 @@ class SaveFile extends IVFile {
      */
     public function get_missions() {
         if ($this->section_exists('Layer')) {
-            $missions = [];
+            $missions = array();
             $section = $this->get_section('Missions/Missions');
             if ($section == null) {
-                return [];
+                return array();
             }
             foreach ($section->sections as $mission) {
                 $missions[] = $mission;
@@ -122,7 +122,7 @@ class SaveFile extends IVFile {
             return $missions;
         }
 
-        return [];
+        return array();
     }
 
     /**
@@ -131,7 +131,7 @@ class SaveFile extends IVFile {
      * @return array the galaxy information
      */
     public function get_galaxy_info() {
-        $info = [];
+        $info = array();
         $galaxy = $this->get_section('Galaxy')->content;
         $info['SectorCount'] = isset($galaxy['SectorCount']) ? intval($galaxy['SectorCount']) : 0;
         $info['CurrentSystem'] = intval($galaxy['CurrentSystem']);
@@ -166,7 +166,7 @@ class SaveFile extends IVFile {
             $fleet = $this->get_ships('FriendlyShip');
             $fleet_cnt = count($fleet);
             $hostiles = count($this->get_ships('HostileShip'));
-            $ships = [];
+            $ships = array();
             foreach ($fleet as $ship) {
                 $ships[] = $ship->info['Name'];
             }
@@ -174,7 +174,7 @@ class SaveFile extends IVFile {
             $all_ships = 0;
             $fleet_cnt = 0;
             $hostiles = 0;
-            $ships = [];
+            $ships = array();
         }
         $galaxy = $this->get_galaxy_info();
 

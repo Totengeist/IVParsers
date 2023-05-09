@@ -6,17 +6,17 @@ namespace Totengeist\IVParser;
  * Classes necessary for processing a `.ship` file.
  */
 class ShipFile extends IVFile {
-    public $info = [];
+    public $info = array();
 
-    const WEAPONS = ['GatlingGun', 'Cannon', 'Railgun'];
-    const ENGINES = ['Engine'];
-    const POWER = ['Reactor', 'FusionReactor'];
-    const LOGISTICS = ['MiningLaser', 'DroneBay'];
-    const THRUSTERS = ['Thrusters'];
-    const CELLS = ['Hull', 'Interior', 'Floor', 'Habitation', 'Armour'];
-    const CELL_TYPES = ['Storage'];
-    const TANKS = ['TinyTank', 'Small Tank', 'Tank'];
-    const RESOURCES = ['Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium'];
+    const WEAPONS = array('GatlingGun', 'Cannon', 'Railgun');
+    const ENGINES = array('Engine');
+    const POWER = array('Reactor', 'FusionReactor');
+    const LOGISTICS = array('MiningLaser', 'DroneBay');
+    const THRUSTERS = array('Thrusters');
+    const CELLS = array('Hull', 'Interior', 'Floor', 'Habitation', 'Armour');
+    const CELL_TYPES = array('Storage');
+    const TANKS = array('TinyTank', 'Small Tank', 'Tank');
+    const RESOURCES = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium');
 
     /**
      * An intermediary constructor.
@@ -27,7 +27,7 @@ class ShipFile extends IVFile {
      * @param int   $level     the indentation level of the section in the original file
      * @param array $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($structure = null, $level = 0, $subfiles = []) {
+    public function __construct($structure = array(), $level = 0, $subfiles = array()) {
         if (!self::is_ship($structure, $level)) {
             throw new \Exception('This is not a ship file.');
         }
@@ -66,15 +66,15 @@ class ShipFile extends IVFile {
      * gathering.
      */
     public function get_info() {
-        $this->info = [];
+        $this->info = array();
         $this->info['Type'] = $this->content['Type'];
         $this->info['Name'] = $this->content['Name'];
         $this->info['Engines'] = 0;
         $this->info['PowerOutput'] = 0;
-        $this->info['Weapons'] = [];
-        $this->info['Structure'] = [];
-        $this->info['Storage'] = [];
-        $this->info['TankCapacity'] = [];
+        $this->info['Weapons'] = array();
+        $this->info['Structure'] = array();
+        $this->info['Storage'] = array();
+        $this->info['TankCapacity'] = array();
 
         foreach (self::RESOURCES as $resource) {
             $this->info['TankCapacity'][$resource] = 0;
@@ -129,8 +129,8 @@ class ShipFile extends IVFile {
      * @return array the cell counts by type
      */
     public function get_cell_info() {
-        $types = [];
-        $cells = [];
+        $types = array();
+        $cells = array();
         foreach ($this->get_section('GridMap/Palette')->sections as $cell) {
             $path = explode('/', $cell->path);
             $name = $path[count($path)-1];
@@ -140,7 +140,7 @@ class ShipFile extends IVFile {
             }
             // If the cell is empty space, it contains no content.
             if (count($cell->content) == 0) {
-                $types[$name] = [];
+                $types[$name] = array();
             } else {
                 foreach ($cell->content as $key => $type) {
                     if (in_array($key, self::CELLS)) {
@@ -149,7 +149,7 @@ class ShipFile extends IVFile {
                         $key = 'Storage ' . $type;
                         $types[$name][] = $key;
                     } else {
-                        $types[$name] = [];
+                        $types[$name] = array();
                     }
                 }
             }
@@ -209,9 +209,9 @@ class ShipFile extends IVFile {
      */
     public function get_object_content($label, $item = null) {
         if (!$this->section_exists('Objects')) {
-            return [];
+            return array();
         }
-        $content = [];
+        $content = array();
         foreach ($this->sections['Objects']->sections as $object) {
             if ($object->content['Type'] == $label) {
                 if ($item != null && isset($object->content[$item])) {
