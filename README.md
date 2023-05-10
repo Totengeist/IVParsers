@@ -1,5 +1,5 @@
 # Introversion Parsers
-[![Latest Stable Version](http://poser.pugx.org/totengeist/iv-parsers/v)](https://packagist.org/packages/totengeist/iv-parsers) [![Total Downloads](http://poser.pugx.org/totengeist/iv-parsers/downloads)](https://packagist.org/packages/totengeist/iv-parsers) [![Latest Unstable Version](http://poser.pugx.org/totengeist/iv-parsers/v/unstable)](https://packagist.org/packages/totengeist/iv-parsers) [![License](http://poser.pugx.org/totengeist/iv-parsers/license)](https://packagist.org/packages/totengeist/iv-parsers) [![PHP Version Require](http://poser.pugx.org/totengeist/iv-parsers/require/php)](https://packagist.org/packages/totengeist/iv-parsers)
+[![Build Status](https://github.com/Totengeist/IVParsers/actions/workflows/php.yml/badge.svg)](https://github.com/Totengeist/IVParsers/actions/workflows/php.yml) [![Latest Stable Version](http://poser.pugx.org/totengeist/iv-parsers/v)](https://packagist.org/packages/totengeist/iv-parsers) [![Total Downloads](http://poser.pugx.org/totengeist/iv-parsers/downloads)](https://packagist.org/packages/totengeist/iv-parsers) [![Latest Unstable Version](http://poser.pugx.org/totengeist/iv-parsers/v/unstable)](https://packagist.org/packages/totengeist/iv-parsers) [![License](http://poser.pugx.org/totengeist/iv-parsers/license)](https://packagist.org/packages/totengeist/iv-parsers) [![PHP Version Require](http://poser.pugx.org/totengeist/iv-parsers/require/php)](https://packagist.org/packages/totengeist/iv-parsers)
 
 This library aims to provide parsers for common Introversion file formats. It is currently focused
 on the early access game [The Last Starship][1], but will hopefull include other parsers in the future.
@@ -20,7 +20,7 @@ This will be updated once the package matures to version v0.2.0.
 
 ## Support
 
-For questions not related to contributing directly to the project, please reach out on [Discord][3]
+For questions not related to contributing directly to the project, please reach out on [Discord][3].
 
 ## Contributing
 
