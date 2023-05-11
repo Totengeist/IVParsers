@@ -55,8 +55,8 @@ jobs:
 
     - name: Upload to Codecov
       uses: codecov/codecov-action@v2
-      if: ${{ matrix.php == '8.2' }}
+      if: ${{ matrix.php == '8.2' && matrix.runner == 'ubuntu-22.04' }}
       with:
-        token: ${{ secrets.CODE_COV_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage.xml
         verbose: true
