@@ -78,7 +78,7 @@ class ShipFile extends IVFile {
             $tanks[$resource] = 0.0;
         }
 
-        foreach ($this->get_items_by_type(self::TANKS) as $tank_type) {
+        foreach ($this->get_tanks() as $tank_type) {
             foreach ($tank_type as $tank) {
                 if (isset($tank['Resource']) && isset($tank['Capacity'])) {
                     if (!isset($tanks[$tank['Resource']])) {
@@ -116,7 +116,7 @@ class ShipFile extends IVFile {
      *
      * @return array the items, grouped by type
      */
-    public function get_items_by_type($type) {
+    private function get_items_by_type($type) {
         $items = array();
 
         foreach ($type as $item) {
@@ -130,11 +130,65 @@ class ShipFile extends IVFile {
     }
 
     /**
+     * Get weapons by type.
+     *
+     * @return array weapons, grouped by type
+     */
+    public function get_weapons() {
+        return $this->get_items_by_type(self::WEAPONS);
+    }
+
+    /**
+     * Get engines by type.
+     *
+     * @return array engines, grouped by type
+     */
+    public function get_engines() {
+        return $this->get_items_by_type(self::ENGINES);
+    }
+
+    /**
+     * Get logistics equipment by type.
+     *
+     * @return array logistics equipment, grouped by type
+     */
+    public function get_logistics() {
+        return $this->get_items_by_type(self::LOGISTICS);
+    }
+
+    /**
+     * Get generators by type.
+     *
+     * @return array generators, grouped by type
+     */
+    public function get_generators() {
+        return $this->get_items_by_type(self::POWER);
+    }
+
+    /**
+     * Get thrusters by type.
+     *
+     * @return array thrusters, grouped by type
+     */
+    public function get_thrusters() {
+        return $this->get_items_by_type(self::THRUSTERS);
+    }
+
+    /**
+     * Get tanks by type.
+     *
+     * @return array tanks, grouped by type
+     */
+    public function get_tanks() {
+        return $this->get_items_by_type(self::TANKS);
+    }
+
+    /**
      * Get the counts of items by type given an associative array of types.
      *
      * @return array the item counts, grouped by type
      */
-    public function get_item_counts_by_type($type) {
+    private function get_item_counts_by_type($type) {
         $counts = array();
 
         foreach ($type as $key) {
