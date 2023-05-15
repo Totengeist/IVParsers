@@ -10,9 +10,9 @@ abstract class TestCase extends BaseTestCase {
      */
     public function customExpectException($class) {
         if (class_exists("\PHPUnit_Runner_Version") && version_compare(\PHPUnit_Runner_Version::id(), '4.0', '>=') && version_compare(\PHPUnit_Runner_Version::id(), '5.0', '<=')) {
-            return parent::setExpectedException($class);
+            return parent::setExpectedException($class); /* @phpstan-ignore-line */
         }
 
-        return parent::expectException($class);
+        parent::expectException($class);
     }
 }

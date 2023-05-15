@@ -16,12 +16,12 @@ jobs:
     name: PHP ${{ matrix.php }} on ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Install PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
-        
+
     - name: Report PHP version
       run: php -v
 
@@ -42,11 +42,11 @@ jobs:
     - name: Run test suite
       run: composer test
       if: ${{ matrix.php != '5.3' && matrix.php != '5.4' && matrix.php != '5.5' && matrix.php != '8.2' }}
-      
+
     - name: Run test suite
       run: vendor/bin/phpunit --verbose
       if: ${{ matrix.php == '5.3' || matrix.php == '5.4' || matrix.php == '5.5' }}
-      
+
     - name: Run test suite
       run: vendor/bin/phpunit --verbose --coverage-clover ./coverage.xml
       if: ${{ matrix.php == '8.2' }}
@@ -60,3 +60,9 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage.xml
         verbose: true
+
+    - name: Run phpstan suite
+      run: |
+        composer require --dev phpstan/phpstan
+        vendor/bin/phpstan analyse src tests --level 5
+      if: ${{ matrix.php == '8.2' }}

@@ -73,9 +73,9 @@ class Section {
     /**
      * Create subsections recursively based on a given structure.
      *
-     * @param array $content  the structure of the section and its subsections
-     * @param int   $level    the indentation level of the section in the original file
-     * @param array $subfiles an array of IVFile-inheriting classes and their paths
+     * @param array $structure the structure of the section and its subsections
+     * @param int   $level     the indentation level of the section in the original file
+     * @param array $subfiles  an array of IVFile-inheriting classes and their paths
      */
     public function get_sections($structure, $level = 0, $subfiles = array()) {
         $content = array();
@@ -94,7 +94,7 @@ class Section {
                         preg_match('/^ *BEGIN ([^ "]*|"[^"]*")(?: +(.*))? +END *$/i', $line, $matches);
                         if (count($matches) == 0) {
                             // @codeCoverageIgnoreStart
-                            throw new ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
+                            throw new \ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
                             // @codeCoverageIgnoreEnd
                         }
                         $section_title = trim($matches[1]);
@@ -127,7 +127,7 @@ class Section {
                     preg_match('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/', trim($line), $matches);
                     if (count($matches) == 0) {
                         // @codeCoverageIgnoreStart
-                        throw new ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
+                        throw new \ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
                         // @codeCoverageIgnoreEnd
                     }
                     $content[trim($matches['name'])] = trim(trim($matches['value']), '"');
@@ -154,7 +154,7 @@ class Section {
      * @param int    $level    the indentation level of the section in the original file
      * @param array  $subfiles an array of IVFile-inheriting classes and their paths
      *
-     * @return Section[] the Section or a Section-inheriting class
+     * @return object the Section or a Section-inheriting class
      */
     public function check_subfile($path, $content, $level, $subfiles) {
         if (in_array($path, array_keys($subfiles))) {
@@ -167,8 +167,8 @@ class Section {
     /**
      * Add a subsection.
      *
-     * @param string    $key    a string representing the section name
-     * @param Section[] $object the section to add
+     * @param string  $key    a string representing the section name
+     * @param Section $object the section to add
      *
      * @return void
      */
@@ -208,7 +208,7 @@ class Section {
      *
      * @param string $section_path a relative path to a subsection
      *
-     * @return Section[]|array|null the specific subsection(s) requested or null if not found
+     * @return Section|Section[]|null the specific subsection(s) requested or null if not found
      */
     public function get_section($section_path) {
         $path = explode('/', $section_path);
@@ -241,9 +241,9 @@ class IVFile extends Section {
      * string) whereas a Section requires an array. The usual constructor is then called on that
      * data.
      *
-     * @param array $structure the structure of the section and its subsections
-     * @param int   $level     the indentation level of the section in the original file
-     * @param array $subfiles  an array of IVFile-inheriting classes and their paths
+     * @param array|string $structure the structure of the section and its subsections
+     * @param int          $level     the indentation level of the section in the original file
+     * @param array        $subfiles  an array of IVFile-inheriting classes and their paths
      */
     public function __construct($structure = null, $level = 0, $subfiles = array()) {
         if ($structure !== null) {
