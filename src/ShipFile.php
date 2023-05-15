@@ -321,7 +321,7 @@ class ShipFile extends IVFile {
         $info['Weapons'] = $this->get_item_counts_by_type(self::WEAPONS);
         $info['Logistics'] = $this->get_item_counts_by_type(self::LOGISTICS);
         $result = $this->get_generator_count_and_output();
-        $info['PowerOutput'] = $result[0];
+        $power_output = $result[0];
         $info['Generators'] = $result[1];
         $info['TankCapacity'] = $this->get_tank_capacity_by_type();
         foreach ($this->get_cell_info() as $key => $cell) {
@@ -340,7 +340,7 @@ class ShipFile extends IVFile {
         }
         $engine_count = 0;
         foreach ($info['Engines'] as $count) {
-            $weapon_count += $count;
+            $engine_count += $count;
         }
         $generators = 0;
         foreach ($info['Generators'] as $count) {
@@ -350,9 +350,9 @@ class ShipFile extends IVFile {
         echo sprintf($template,
             $info['Name'],
             $weapon_count,
-            $info['Engines'],
+            $engine_count,
             $generators,
-            $info['PowerOutput']
+            $power_output
         );
         print_r($info);
     }
