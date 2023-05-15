@@ -9,19 +9,6 @@ namespace Totengeist\IVParser;
  *  * ships
  */
 class SaveFile extends IVFile {
-    public $info = array();
-
-    /**
-     * The types of ships available in the game.
-     *
-     *  * FriendlyShip - a player-controlled ship
-     *  * HostileShip - an enemy ship, which will attack player-controlled and neutral ships
-     *  * NeutralShip - an NPC ship controlled by AI
-     *  * ShipForSale - a ship hull available to a shipyard that can be purchased by the player
-     *  * Derelict - a stranded ship that can be looted
-     */
-    const SHIPS = array('FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict');
-
     /**
      * An intermediary constructor.
      *
@@ -89,7 +76,7 @@ class SaveFile extends IVFile {
         $layers = $this->get_layers();
 
         foreach ($layers as $ship) {
-            $ships[$ship->info['Type']][] = $ship;
+            $ships[$ship->content['Type']][] = $ship;
         }
 
         if ($type !== null) {
@@ -168,7 +155,7 @@ class SaveFile extends IVFile {
             $hostiles = count($this->get_ships('HostileShip'));
             $ships = array();
             foreach ($fleet as $ship) {
-                $ships[] = $ship->info['Name'];
+                $ships[] = $ship->content['Name'];
             }
         } else {
             $all_ships = 0;

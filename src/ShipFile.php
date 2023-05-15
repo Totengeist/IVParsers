@@ -6,7 +6,16 @@ namespace Totengeist\IVParser;
  * Classes necessary for processing a `.ship` file.
  */
 class ShipFile extends IVFile {
-    public $info = array();
+    /**
+     * The types of ships available in the game.
+     *
+     *  * FriendlyShip - a player-controlled ship
+     *  * HostileShip - an enemy ship, which will attack player-controlled and neutral ships
+     *  * NeutralShip - an NPC ship controlled by AI
+     *  * ShipForSale - a ship hull available to a shipyard that can be purchased by the player
+     *  * Derelict - a stranded ship that can be looted
+     */
+    const SHIPS = array('FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict');
 
     const WEAPONS = array('GatlingGun', 'Cannon', 'Railgun');
     const ENGINES = array('Engine');
@@ -32,8 +41,6 @@ class ShipFile extends IVFile {
             throw new \Exception('This is not a ship file.');
         }
         parent::__construct($structure, $level, $subfiles);
-
-        $this->get_info();
     }
 
     /**
@@ -60,64 +67,85 @@ class ShipFile extends IVFile {
     }
 
     /**
-     * Collect the relevant ship info.
+     * Get the overall tank capacity for each type of resource.
      *
-     * This should be replaced by multiple functions and not use a class member variable for
-     * gathering.
+     * @return array an associative array of resource capacities
      */
-    public function get_info() {
-        $this->info = array();
-        $this->info['Type'] = $this->content['Type'];
-        $this->info['Name'] = $this->content['Name'];
-        $this->info['Engines'] = 0;
-        $this->info['PowerOutput'] = 0;
-        $this->info['Weapons'] = array();
-        $this->info['Structure'] = array();
-        $this->info['Storage'] = array();
-        $this->info['TankCapacity'] = array();
+    public function get_tank_capacity_by_type() {
+        $tanks = array();
 
         foreach (self::RESOURCES as $resource) {
-            $this->info['TankCapacity'][$resource] = 0;
+            $tanks[$resource] = 0.0;
         }
-        $this->info['Mass'] = isset($this->content['Mass']) ? (float) $this->content['Mass'] : 0;
-        foreach (self::WEAPONS as $weapon) {
-            if (!isset($this->info[$weapon])) {
-                $this->info['Weapons'][$weapon] = $this->get_object_count($weapon);
-            } else {
-                $this->info['Weapons'][$weapon] += $this->get_object_count($weapon);
-            }
-        }
-        foreach (self::ENGINES as $engine) {
-            $this->info['Engines'] += $this->get_object_count($engine);
-        }
-        foreach (self::POWER as $generator) {
-            if (!isset($this->info[$generator])) {
-                $this->info[$generator] = $this->get_object_count($generator);
-            } else {
-                $this->info[$generator] += $this->get_object_count($generator);
-            }
-            foreach ($this->get_object_content($generator, 'PowerOutput') as $output) {
-                $this->info['PowerOutput'] += (float) $output;
-            }
-        }
-        foreach (self::LOGISTICS as $item) {
-            $this->info[$item] = $this->get_object_count($item);
-        }
-        foreach (self::TANKS as $tank) {
-            foreach ($this->get_object_content($tank) as $output) {
-                if (isset($output['Resource']) && isset($output['Capacity'])) {
-                    $this->info['TankCapacity'][$output['Resource']] += (float) $output['Capacity'];
+
+        foreach ($this->get_items_by_type(self::TANKS) as $tank_type) {
+            foreach ($tank_type as $tank) {
+                if (isset($tank['Resource']) && isset($tank['Capacity'])) {
+                    if (!isset($tanks[$tank['Resource']])) {
+                        $tanks[$tank['Resource']] = 0.0;
+                    }
+                    $tanks[$tank['Resource']] += (float) $tank['Capacity'];
                 }
             }
         }
-        foreach ($this->get_cell_info() as $key => $cell) {
-            $shortkey = str_replace('Storage ', '', $key);
-            if ($key == $shortkey) {
-                $this->info['Structure'][$key] = $cell;
-            } else {
-                $this->info['Storage'][$shortkey] = $cell;
+
+        return $tanks;
+    }
+
+    /**
+     * Get the count of generators and their overall output.
+     *
+     * @return array
+     */
+    public function get_generator_count_and_output() {
+        $output = 0;
+        $count = array();
+        foreach (self::POWER as $generator) {
+            $count[$generator] = 0;
+            foreach ($this->get_object_content($generator, 'PowerOutput') as $power) {
+                $output += (float) $power;
+                $count[$generator]++;
             }
         }
+
+        return array($output, $count);
+    }
+
+    /**
+     * Get items by type given an associative array of types.
+     *
+     * @return array the items, grouped by type
+     */
+    public function get_items_by_type($type) {
+        $items = array();
+
+        foreach ($type as $item) {
+            $results = $this->get_object_content($item);
+            if ($results !== array()) {
+                $items[$item] = $results;
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Get the counts of items by type given an associative array of types.
+     *
+     * @return array the item counts, grouped by type
+     */
+    public function get_item_counts_by_type($type) {
+        $counts = array();
+
+        foreach ($type as $key) {
+            $counts[$key] = 0;
+        }
+
+        foreach ($this->get_items_by_type($type) as $key => $content) {
+            $counts[$key] = count($content);
+        }
+
+        return $counts;
     }
 
     /**
@@ -225,30 +253,55 @@ class ShipFile extends IVFile {
         return $content;
     }
 
+    // @codeCoverageIgnoreStart
+
     /**
-     * Debug print fucntion that should be replaced with something more useful.
+     * Debug print function that should be replaced with something more useful.
      */
     public function print_info() {
-        $info = $this->info;
-        ksort($info);
-        $info['Weapons'] = 0;
-        foreach (self::WEAPONS as $weapon) {
-            if (isset($info[$weapon])) {
-                $info['Weapons'] += $info[$weapon];
+        $info = array();
+        $info['Type'] = $this->content['Type'];
+        $info['Name'] = $this->content['Name'];
+        $info['Mass'] = isset($this->content['Mass']) ? (float) $this->content['Mass'] : 0;
+        $info['Engines'] = $this->get_item_counts_by_type(self::ENGINES);
+        $info['Weapons'] = $this->get_item_counts_by_type(self::WEAPONS);
+        $info['Logistics'] = $this->get_item_counts_by_type(self::LOGISTICS);
+        $result = $this->get_generator_count_and_output();
+        $info['PowerOutput'] = $result[0];
+        $info['Generators'] = $result[1];
+        $info['TankCapacity'] = $this->get_tank_capacity_by_type();
+        foreach ($this->get_cell_info() as $key => $cell) {
+            $shortkey = str_replace('Storage ', '', $key);
+            if ($key == $shortkey) {
+                $info['Structure'][$key] = $cell;
+            } else {
+                $info['Storage'][$shortkey] = $cell;
             }
         }
-        $info['PowerGenerators'] = 0;
-        foreach (self::POWER as $gen) {
-            $info['PowerGenerators'] += $info[$gen];
+
+        ksort($info);
+        $weapon_count = 0;
+        foreach ($info['Weapons'] as $count) {
+            $weapon_count += $count;
+        }
+        $engine_count = 0;
+        foreach ($info['Engines'] as $count) {
+            $weapon_count += $count;
+        }
+        $generators = 0;
+        foreach ($info['Generators'] as $count) {
+            $generators += $count;
         }
         $template = 'Your ship is named %s. It has %3d weapons and %3d engines. Its %3d power generators generate %01.2f Mw.';
         echo sprintf($template,
             $info['Name'],
-            $info['Weapons'],
+            $weapon_count,
             $info['Engines'],
-            $info['PowerGenerators'],
+            $generators,
             $info['PowerOutput']
         );
         print_r($info);
     }
+
+    // @codeCoverageIgnoreEnd
 }
