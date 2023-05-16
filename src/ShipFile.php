@@ -32,9 +32,9 @@ class ShipFile extends IVFile {
      *
      * Verify the file is a valid ship file before calling the standard constructor.
      *
-     * @param array|string $structure the structure of the section and its subsections
-     * @param int          $level     the indentation level of the section in the original file
-     * @param array        $subfiles  an array of IVFile-inheriting classes and their paths
+     * @param string|string[] $structure the structure of the section and its subsections
+     * @param int             $level     the indentation level of the section in the original file
+     * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array()) {
         if (!self::is_ship($structure, $level)) {
@@ -48,8 +48,8 @@ class ShipFile extends IVFile {
      *
      * We check for the Habitation section as a unique section to save files.
      *
-     * @param array|string $structure the structure of the section and its subsections
-     * @param int          $level     the indentation level of the section in the original file
+     * @param string|string[] $structure the structure of the section and its subsections
+     * @param int             $level     the indentation level of the section in the original file
      *
      * @return bool is it a valid ship file?
      */
@@ -69,7 +69,7 @@ class ShipFile extends IVFile {
     /**
      * Get the overall tank capacity for each type of resource.
      *
-     * @return array an associative array of resource capacities
+     * @return float[] an associative array of resource capacities
      */
     public function get_tank_capacity_by_type() {
         $tanks = array();
@@ -95,7 +95,7 @@ class ShipFile extends IVFile {
     /**
      * Get the count of generators and their overall output.
      *
-     * @return array
+     * @return array<int, array<string, int>|float|int>
      */
     public function get_generator_count_and_output() {
         $output = 0;
@@ -114,7 +114,9 @@ class ShipFile extends IVFile {
     /**
      * Get items by type given an associative array of types.
      *
-     * @return array the items, grouped by type
+     * @param string[] $type a list of the objects to retrieve
+     *
+     * @return array<string, array<string[]>> the items, grouped by type
      */
     private function get_items_by_type($type) {
         $items = array();
@@ -132,7 +134,7 @@ class ShipFile extends IVFile {
     /**
      * Get weapons by type.
      *
-     * @return array weapons, grouped by type
+     * @return array<string, array<string[]>> weapons, grouped by type
      */
     public function get_weapons() {
         return $this->get_items_by_type(self::WEAPONS);
@@ -141,7 +143,7 @@ class ShipFile extends IVFile {
     /**
      * Get engines by type.
      *
-     * @return array engines, grouped by type
+     * @return array<string, array<string[]>> engines, grouped by type
      */
     public function get_engines() {
         return $this->get_items_by_type(self::ENGINES);
@@ -150,7 +152,7 @@ class ShipFile extends IVFile {
     /**
      * Get logistics equipment by type.
      *
-     * @return array logistics equipment, grouped by type
+     * @return array<string, array<string[]>> logistics equipment, grouped by type
      */
     public function get_logistics() {
         return $this->get_items_by_type(self::LOGISTICS);
@@ -159,7 +161,7 @@ class ShipFile extends IVFile {
     /**
      * Get generators by type.
      *
-     * @return array generators, grouped by type
+     * @return array<string, array<string[]>> generators, grouped by type
      */
     public function get_generators() {
         return $this->get_items_by_type(self::POWER);
@@ -168,7 +170,7 @@ class ShipFile extends IVFile {
     /**
      * Get thrusters by type.
      *
-     * @return array thrusters, grouped by type
+     * @return array<string, array<string[]>> thrusters, grouped by type
      */
     public function get_thrusters() {
         return $this->get_items_by_type(self::THRUSTERS);
@@ -177,7 +179,7 @@ class ShipFile extends IVFile {
     /**
      * Get tanks by type.
      *
-     * @return array tanks, grouped by type
+     * @return array<string, array<string[]>> tanks, grouped by type
      */
     public function get_tanks() {
         return $this->get_items_by_type(self::TANKS);
@@ -186,7 +188,9 @@ class ShipFile extends IVFile {
     /**
      * Get the counts of items by type given an associative array of types.
      *
-     * @return array the item counts, grouped by type
+     * @param string[] $type a list of the objects to retrieve
+     *
+     * @return int[] the item counts, grouped by type
      */
     private function get_item_counts_by_type($type) {
         $counts = array();
@@ -208,7 +212,7 @@ class ShipFile extends IVFile {
      * Combine the GridMap/Palette and GridMap/Cells regions into one array containing the relevant
      * information.
      *
-     * @return array the cell counts by type
+     * @return int[] the cell counts by type
      */
     public function get_cell_info() {
         $types = array();
@@ -287,7 +291,7 @@ class ShipFile extends IVFile {
      * @param string $label the object to retrieve
      * @param string $item  a particular property of the objects to retrieve
      *
-     * @return array the content information
+     * @return string[][] the content information
      */
     public function get_object_content($label, $item = null) {
         if (!$this->section_exists('Objects')) {
@@ -311,6 +315,8 @@ class ShipFile extends IVFile {
 
     /**
      * Debug print function that should be replaced with something more useful.
+     *
+     * @return void
      */
     public function print_info() {
         $info = array();

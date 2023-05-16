@@ -1,0 +1,9 @@
+parameters:
+	level: 6
+	paths:
+		- src
+		- tests
+	ignoreErrors:
+		-
+			message: '#^Method Tests\\[^\:]+\:\:test[^\(]+\(\) has no return type specified\.$#'
+			path: tests/*

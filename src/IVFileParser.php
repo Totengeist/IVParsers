@@ -16,11 +16,11 @@ namespace Totengeist\IVParser;
  * structure for retrieving specific sub-sections.
  */
 class Section {
-    /** The section path, relative to the base. */
+    /** @var string|null the section's path, relative to the base */
     public $path = null;
-    /** The original content used to generate the section. */
-    public $content = null;
-    /** An array of subsection objects. */
+    /** @var string[] the section's meta data */
+    public $content = array();
+    /** @var Section[]|Section[][] the section's subsections */
     public $sections = array();
 
     /**
@@ -29,10 +29,10 @@ class Section {
      * Since most IVFiles, and therefore Sections, are created directly from files, we set the
      * indentation level for processing. This isn't necessary if creating an IVFile programatically.
      *
-     * @param string $path     the name of the section
-     * @param array  $content  the structure of the section and its subsections
-     * @param int    $level    the indentation level of the section in the original file
-     * @param array  $subfiles an array of IVFile-inheriting classes and their paths
+     * @param string   $path     the name of the section
+     * @param string[] $content  the structure of the section and its subsections
+     * @param int      $level    the indentation level of the section in the original file
+     * @param string[] $subfiles an array of IVFile-inheriting classes and their paths
      */
     public function __construct($path = null, $content = null, $level = 0, $subfiles = array()) {
         if ($path !== null) {
@@ -50,7 +50,9 @@ class Section {
      *
      * This is primarily a debug function and prints sections paths recursively.
      *
-     * @param array $ignore paths to ignore in the tree
+     * @param string[] $ignore paths to ignore in the tree
+     *
+     * @return void
      */
     public function print_section_tree($ignore = array()) {
         if (in_array($this->path, $ignore)) {
@@ -73,9 +75,11 @@ class Section {
     /**
      * Create subsections recursively based on a given structure.
      *
-     * @param array $structure the structure of the section and its subsections
-     * @param int   $level     the indentation level of the section in the original file
-     * @param array $subfiles  an array of IVFile-inheriting classes and their paths
+     * @param string[] $structure the structure of the section and its subsections
+     * @param int      $level     the indentation level of the section in the original file
+     * @param string[] $subfiles  an array of IVFile-inheriting classes and their paths
+     *
+     * @return void
      */
     public function get_sections($structure, $level = 0, $subfiles = array()) {
         $content = array();
@@ -149,12 +153,12 @@ class Section {
      * Check if the section path is in the list of subfile paths. If so, create the subfile.
      * Otherwise, create a generic section.
      *
-     * @param string $path     the name of the section
-     * @param array  $content  the structure of the section and its subsections
-     * @param int    $level    the indentation level of the section in the original file
-     * @param array  $subfiles an array of IVFile-inheriting classes and their paths
+     * @param string   $path     the name of the section
+     * @param string[] $content  the structure of the section and its subsections
+     * @param int      $level    the indentation level of the section in the original file
+     * @param string[] $subfiles an array of IVFile-inheriting classes and their paths
      *
-     * @return object the Section or a Section-inheriting class
+     * @return Section the Section or a Section-inheriting class
      */
     public function check_subfile($path, $content, $level, $subfiles) {
         if (in_array($path, array_keys($subfiles))) {
@@ -167,8 +171,8 @@ class Section {
     /**
      * Add a subsection.
      *
-     * @param string  $key    a string representing the section name
-     * @param Section $object the section to add
+     * @param int|string $key    a string representing the section name
+     * @param Section    $object the section to add
      *
      * @return void
      */
@@ -208,7 +212,7 @@ class Section {
      *
      * @param string $section_path a relative path to a subsection
      *
-     * @return Section|Section[]|null the specific subsection(s) requested or null if not found
+     * @return Section|Section[] the specific subsection(s) requested or null if not found
      */
     public function get_section($section_path) {
         $path = explode('/', $section_path);
@@ -216,7 +220,7 @@ class Section {
         // Move down the path until we find what we want or a part of the path is missing.
         foreach ($path as $section) {
             if (!isset($content->sections[$section])) {
-                return null;
+                return array();
             }
             $content = $content->sections[$section];
         }
@@ -232,8 +236,6 @@ class Section {
  * subsection.
  */
 class IVFile extends Section {
-    public $file = null;
-
     /**
      * An intermediary constructor.
      *
@@ -241,9 +243,9 @@ class IVFile extends Section {
      * string) whereas a Section requires an array. The usual constructor is then called on that
      * data.
      *
-     * @param array|string $structure the structure of the section and its subsections
-     * @param int          $level     the indentation level of the section in the original file
-     * @param array        $subfiles  an array of IVFile-inheriting classes and their paths
+     * @param string|string[] $structure the structure of the section and its subsections
+     * @param int             $level     the indentation level of the section in the original file
+     * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
     public function __construct($structure = null, $level = 0, $subfiles = array()) {
         if ($structure !== null) {

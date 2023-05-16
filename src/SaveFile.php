@@ -14,9 +14,9 @@ class SaveFile extends IVFile {
      *
      * Verify the file is a valid save file before calling the standard constructor.
      *
-     * @param array|string $structure the structure of the section and its subsections
-     * @param int          $level     the indentation level of the section in the original file
-     * @param array        $subfiles  an array of IVFile-inheriting classes and their paths
+     * @param string|string[] $structure the structure of the section and its subsections
+     * @param int             $level     the indentation level of the section in the original file
+     * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
     public function __construct($structure = null, $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\ShipFile')) {
         if (!$this->is_save($structure, $level)) {
@@ -30,8 +30,8 @@ class SaveFile extends IVFile {
      *
      * We check for the Galaxy section as a unique section to save files.
      *
-     * @param array|string $structure the structure of the section and its subsections
-     * @param int          $level     the indentation level of the section in the original file
+     * @param string|string[] $structure the structure of the section and its subsections
+     * @param int             $level     the indentation level of the section in the original file
      *
      * @return bool is it a valid save file?
      */
@@ -51,7 +51,7 @@ class SaveFile extends IVFile {
     /**
      * Retrieve ships stored in the save file.
      *
-     * @return array the ship files
+     * @return Section[] the ship files
      */
     public function get_layers() {
         if ($this->section_exists('Layer')) {
@@ -69,7 +69,9 @@ class SaveFile extends IVFile {
     /**
      * Retrieve ships stored in the save file by categorization.
      *
-     * @return array the ship files
+     * @param string $type the type of ships to retrieve
+     *
+     * @return Section[]|array<string, Section[]> the ship files
      */
     public function get_ships($type = null) {
         $ships = array();
@@ -93,7 +95,7 @@ class SaveFile extends IVFile {
     /**
      * Retrieve missions from all ships stored in the save file.
      *
-     * @return array the mission information
+     * @return Section[] the mission information
      */
     public function get_missions() {
         if ($this->section_exists('Layer')) {
@@ -115,7 +117,7 @@ class SaveFile extends IVFile {
     /**
      * Retrieve basic information about the galaxy.
      *
-     * @return array the galaxy information
+     * @return int[] the galaxy information
      */
     public function get_galaxy_info() {
         $info = array();
@@ -146,6 +148,8 @@ class SaveFile extends IVFile {
 
     /**
      * Debug print fucntion that should be replaced with something more useful.
+     *
+     * @return void
      */
     public function print_info() {
         if ($this->section_exists('Layer')) {

@@ -64,5 +64,5 @@ jobs:
     - name: Run phpstan suite
       run: |
         composer require --dev phpstan/phpstan
-        vendor/bin/phpstan analyse src tests --level 5
+        vendor/bin/phpstan analyse
       if: ${{ matrix.php == '8.2' }}
