@@ -9,6 +9,8 @@ namespace Totengeist\IVParser;
  *  * ships
  */
 class SaveFile extends IVFile {
+    const REQUIRED_SECTIONS = array('Galaxy');
+
     /**
      * An intermediary constructor.
      *
@@ -18,34 +20,11 @@ class SaveFile extends IVFile {
      * @param int             $level     the indentation level of the section in the original file
      * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($structure = null, $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\ShipFile')) {
-        if (!$this->is_save($structure, $level)) {
+    public function __construct($structure = array(), $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\ShipFile')) {
+        parent::__construct($structure, $level, $subfiles);
+        if (!$this->is_valid()) {
             throw new \Exception('This is not a save file.');
         }
-        parent::__construct($structure, $level, $subfiles);
-    }
-
-    /**
-     * Verify the given structure is a save file.
-     *
-     * We check for the Galaxy section as a unique section to save files.
-     *
-     * @param string|string[] $structure the structure of the section and its subsections
-     * @param int             $level     the indentation level of the section in the original file
-     *
-     * @return bool is it a valid save file?
-     */
-    public function is_save($structure, $level) {
-        if (is_string($structure)) {
-            $structure = preg_split('/\r?\n/', $structure);
-        }
-        foreach ($structure as $line) {
-            if (strpos($line, str_repeat('    ', $level) . 'BEGIN Galaxy') === 0) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

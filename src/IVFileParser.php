@@ -16,8 +16,8 @@ namespace Totengeist\IVParser;
  * structure for retrieving specific sub-sections.
  */
 class Section {
-    /** @var string|null the section's path, relative to the base */
-    public $path = null;
+    /** @var string the section's path, relative to the base */
+    public $path = '';
     /** @var string[] the section's meta data */
     public $content = array();
     /** @var Section[]|Section[][] the section's subsections */
@@ -29,17 +29,15 @@ class Section {
      * Since most IVFiles, and therefore Sections, are created directly from files, we set the
      * indentation level for processing. This isn't necessary if creating an IVFile programatically.
      *
-     * @param string   $path     the name of the section
-     * @param string[] $content  the structure of the section and its subsections
-     * @param int      $level    the indentation level of the section in the original file
-     * @param string[] $subfiles an array of IVFile-inheriting classes and their paths
+     * @param string   $path      the name of the section
+     * @param string[] $structure the structure of the section and its subsections
+     * @param int      $level     the indentation level of the section in the original file
+     * @param string[] $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($path = null, $content = null, $level = 0, $subfiles = array()) {
-        if ($path !== null) {
-            $this->path = $path;
-        }
-        if ($content !== null) {
-            $this->get_sections($content, $level, $subfiles);
+    public function __construct($path = '', $structure = array(), $level = 0, $subfiles = array()) {
+        $this->path = $path;
+        if ($structure !== array()) {
+            $this->get_sections($structure, $level, $subfiles);
         }
     }
 
@@ -84,7 +82,7 @@ class Section {
     public function get_sections($structure, $level = 0, $subfiles = array()) {
         $content = array();
         $start = -1;
-        $key = null;
+        $key = '';
         for ($i = 0; $i < count($structure); $i++) {
             $line = $structure[$i];
             if (trim($line) == '') {
@@ -236,6 +234,11 @@ class Section {
  * subsection.
  */
 class IVFile extends Section {
+    /** @var string[] paths of sections that must exist for it to be a valid file */
+    const REQUIRED_SECTIONS = array();
+    /** @var string[] content items that must exist for it to be a valid file */
+    const REQUIRED_CONTENT = array();
+
     /**
      * An intermediary constructor.
      *
@@ -247,12 +250,49 @@ class IVFile extends Section {
      * @param int             $level     the indentation level of the section in the original file
      * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($structure = null, $level = 0, $subfiles = array()) {
-        if ($structure !== null) {
-            if (is_string($structure)) {
-                $structure = preg_split('/\r?\n/', $structure);
-            }
-            parent::__construct('', $structure, $level, $subfiles);
+    public function __construct($structure = array(), $level = 0, $subfiles = array()) {
+        parent::__construct('', self::prepare_structure($structure), $level, $subfiles);
+    }
+
+    /**
+     * An intermediary constructor.
+     *
+     * The constructor for an IVFile handles parsing of data sent directory form a file (i.e. a
+     * string) whereas a Section requires an array. The usual constructor is then called on that
+     * data.
+     *
+     * @param string|string[] $structure the structure of the section and its subsections
+     *
+     * @return string[] a cleaned structure
+     */
+    public static function prepare_structure($structure) {
+        if (is_string($structure)) {
+            $result = preg_split('/\r?\n/', $structure);
+            $structure = ($result === false) ? array($structure) : $result;
         }
+
+        return $structure;
+    }
+
+    /**
+     * Verify the given structure is a save file.
+     *
+     * We check for sections and content required in the given file.
+     *
+     * @return bool is it a valid file?
+     */
+    public function is_valid() {
+        foreach (static::REQUIRED_CONTENT as $content) {
+            if (!isset($this->content[$content])) {
+                return false;
+            }
+        }
+        foreach (static::REQUIRED_SECTIONS as $section) {
+            if (!$this->section_exists($section)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

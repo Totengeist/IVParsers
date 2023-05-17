@@ -6,6 +6,8 @@ namespace Totengeist\IVParser;
  * Classes necessary for processing a `.ship` file.
  */
 class ShipFile extends IVFile {
+    const REQUIRED_SECTIONS = array('Habitation');
+
     /**
      * The types of ships available in the game.
      *
@@ -37,33 +39,10 @@ class ShipFile extends IVFile {
      * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array()) {
-        if (!self::is_ship($structure, $level)) {
+        parent::__construct($structure, $level, $subfiles);
+        if (!$this->is_valid()) {
             throw new \Exception('This is not a ship file.');
         }
-        parent::__construct($structure, $level, $subfiles);
-    }
-
-    /**
-     * Verify the given structure is a save file.
-     *
-     * We check for the Habitation section as a unique section to save files.
-     *
-     * @param string|string[] $structure the structure of the section and its subsections
-     * @param int             $level     the indentation level of the section in the original file
-     *
-     * @return bool is it a valid ship file?
-     */
-    public static function is_ship($structure, $level) {
-        if (is_string($structure)) {
-            $structure = preg_split('/\r?\n/', $structure);
-        }
-        foreach ($structure as $line) {
-            if (strpos($line, str_repeat('    ', $level) . 'BEGIN Habitation') === 0) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
