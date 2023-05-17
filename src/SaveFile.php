@@ -11,7 +11,7 @@ use Totengeist\IVParser\Exception\InvalidFileException;
  *  * ships
  */
 class SaveFile extends IVFile {
-    const REQUIRED_SECTIONS = array('Galaxy');
+    protected static $REQUIRED_SECTIONS = array('Galaxy');
 
     /**
      * An intermediary constructor.

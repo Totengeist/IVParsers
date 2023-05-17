@@ -8,7 +8,7 @@ use Totengeist\IVParser\Exception\InvalidFileException;
  * Classes necessary for processing a `.ship` file.
  */
 class ShipFile extends IVFile {
-    const REQUIRED_SECTIONS = array('Habitation');
+    protected static $REQUIRED_SECTIONS = array('Habitation');
 
     /**
      * The types of ships available in the game.

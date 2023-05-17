@@ -288,9 +288,9 @@ class Section {
  */
 class IVFile extends Section {
     /** @var string[] paths of sections that must exist for it to be a valid file */
-    const REQUIRED_SECTIONS = array();
+    protected static $REQUIRED_SECTIONS = array();
     /** @var string[] content items that must exist for it to be a valid file */
-    const REQUIRED_CONTENT = array();
+    protected static $REQUIRED_CONTENT = array();
 
     /**
      * An intermediary constructor.
@@ -335,12 +335,12 @@ class IVFile extends Section {
      * @return bool is it a valid file?
      */
     public function is_valid() {
-        foreach (static::REQUIRED_CONTENT as $content) {
+        foreach (static::$REQUIRED_CONTENT as $content) {
             if (!isset($this->content[$content])) {
                 return false;
             }
         }
-        foreach (static::REQUIRED_SECTIONS as $section) {
+        foreach (static::$REQUIRED_SECTIONS as $section) {
             if (!$this->section_exists($section)) {
                 return false;
             }
