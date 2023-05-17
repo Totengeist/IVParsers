@@ -2,6 +2,8 @@
 
 namespace Totengeist\IVParser;
 
+use Totengeist\IVParser\Exception\InvalidFileException;
+
 /**
  * Classes necessary for processing a `.ship` file.
  */
@@ -40,8 +42,8 @@ class ShipFile extends IVFile {
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array()) {
         parent::__construct($structure, $level, $subfiles);
-        if (!$this->is_valid()) {
-            throw new \Exception('This is not a ship file.');
+        if (!$this->is_valid() && $structure !== array()) {
+            throw new InvalidFileException('ship');
         }
     }
 

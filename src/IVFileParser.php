@@ -9,6 +9,9 @@
 
 namespace Totengeist\IVParser;
 
+use Totengeist\IVParser\Exception\InvalidFileException;
+use Totengeist\IVParser\Exception\SectionNotFoundException;
+
 /**
  * A section of a standard Introversion configuration file.
  *
@@ -197,8 +200,9 @@ class Section {
      * @return bool
      */
     public function section_exists($section_path) {
-        $section = $this->get_section($section_path);
-        if ($section == null) {
+        try {
+            $section = $this->get_section($section_path);
+        } catch (SectionNotFoundException $ex) {
             return false;
         }
 
@@ -218,7 +222,7 @@ class Section {
         // Move down the path until we find what we want or a part of the path is missing.
         foreach ($path as $section) {
             if (!isset($content->sections[$section])) {
-                return array();
+                throw new SectionNotFoundException($section_path);
             }
             $content = $content->sections[$section];
         }
@@ -291,6 +295,32 @@ class IVFile extends Section {
             if (!$this->section_exists($section)) {
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * Verify the given structure is a save file.
+     *
+     * We check for sections and content required in the given file.
+     *
+     * @param string|string[] $structure the structure of the section and its subsections
+     * @param int             $level     the indentation level of the section in the original file
+     * @param string[]|null   $subfiles  an array of IVFile-inheriting classes and their paths
+     *
+     * @return bool is it a valid file structure?
+     */
+    public static function is_valid_structure($structure, $level = 0, $subfiles = null) {
+        try {
+            $class = static::class;
+            if ($subfiles === null) {
+                $file = new $class($structure, $level);
+            } else {
+                $file = new $class($structure, $level, $subfiles);
+            }
+        } catch (InvalidFileException $ex) {
+            return false;
         }
 
         return true;

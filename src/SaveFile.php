@@ -2,6 +2,8 @@
 
 namespace Totengeist\IVParser;
 
+use Totengeist\IVParser\Exception\InvalidFileException;
+
 /**
  * Classes necessary for processing a `.space` file.
  *
@@ -22,8 +24,8 @@ class SaveFile extends IVFile {
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\ShipFile')) {
         parent::__construct($structure, $level, $subfiles);
-        if (!$this->is_valid()) {
-            throw new \Exception('This is not a save file.');
+        if (!$this->is_valid() && $structure !== array()) {
+            throw new InvalidFileException('save');
         }
     }
 
