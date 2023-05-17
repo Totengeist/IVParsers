@@ -362,7 +362,7 @@ class IVFile extends Section {
      */
     public static function is_valid_structure($structure, $level = 0, $subfiles = null) {
         try {
-            $class = static::class;
+            $class = get_called_class();
             if ($subfiles === null) {
                 $file = new $class($structure, $level);
             } else {
