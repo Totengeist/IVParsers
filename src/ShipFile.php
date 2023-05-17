@@ -76,7 +76,7 @@ class ShipFile extends IVFile {
     /**
      * Get the count of generators and their overall output.
      *
-     * @return array<int, array<string, int>|float|int>
+     * @return array{float, array<string, int>}
      */
     public function get_generator_count_and_output() {
         $output = 0;
@@ -97,7 +97,7 @@ class ShipFile extends IVFile {
      *
      * @param string[] $type a list of the objects to retrieve
      *
-     * @return array<string, array<string[]>> the items, grouped by type
+     * @return array<string, array<string[]|string>> the items, grouped by type
      */
     private function get_items_by_type($type) {
         $items = array();
@@ -115,7 +115,7 @@ class ShipFile extends IVFile {
     /**
      * Get weapons by type.
      *
-     * @return array<string, array<string[]>> weapons, grouped by type
+     * @return array<string, array<string[]|string>> weapons, grouped by type
      */
     public function get_weapons() {
         return $this->get_items_by_type(self::WEAPONS);
@@ -124,7 +124,7 @@ class ShipFile extends IVFile {
     /**
      * Get engines by type.
      *
-     * @return array<string, array<string[]>> engines, grouped by type
+     * @return array<string, array<string[]|string>> engines, grouped by type
      */
     public function get_engines() {
         return $this->get_items_by_type(self::ENGINES);
@@ -133,7 +133,7 @@ class ShipFile extends IVFile {
     /**
      * Get logistics equipment by type.
      *
-     * @return array<string, array<string[]>> logistics equipment, grouped by type
+     * @return array<string, array<string[]|string>> logistics equipment, grouped by type
      */
     public function get_logistics() {
         return $this->get_items_by_type(self::LOGISTICS);
@@ -142,7 +142,7 @@ class ShipFile extends IVFile {
     /**
      * Get generators by type.
      *
-     * @return array<string, array<string[]>> generators, grouped by type
+     * @return array<string, array<string[]|string>> generators, grouped by type
      */
     public function get_generators() {
         return $this->get_items_by_type(self::POWER);
@@ -151,7 +151,7 @@ class ShipFile extends IVFile {
     /**
      * Get thrusters by type.
      *
-     * @return array<string, array<string[]>> thrusters, grouped by type
+     * @return array<string, array<string[]|string>> thrusters, grouped by type
      */
     public function get_thrusters() {
         return $this->get_items_by_type(self::THRUSTERS);
@@ -160,7 +160,7 @@ class ShipFile extends IVFile {
     /**
      * Get tanks by type.
      *
-     * @return array<string, array<string[]>> tanks, grouped by type
+     * @return array<string, array<string[]|string>> tanks, grouped by type
      */
     public function get_tanks() {
         return $this->get_items_by_type(self::TANKS);
@@ -198,7 +198,10 @@ class ShipFile extends IVFile {
     public function get_cell_info() {
         $types = array();
         $cells = array();
-        foreach ($this->get_section('GridMap/Palette')->sections as $cell) {
+        foreach ($this->get_unique_section('GridMap/Palette')->sections as $cell) {
+            if (is_array($cell)) {
+                continue;
+            }
             $path = explode('/', $cell->path);
             $name = $path[count($path)-1];
             // If the name is empty, the character is '/' and was exploded.
@@ -224,7 +227,7 @@ class ShipFile extends IVFile {
         $typekeys = array_keys($types);
         $cell_width = strlen($typekeys[count($typekeys)-1])+1;
 
-        foreach ($this->get_section('GridMap/Cells')->content as $cellk => $cell) {
+        foreach ($this->get_unique_section('GridMap/Cells')->content as $cellk => $cell) {
             for ($i = 0; $i < strlen($cell); $i += $cell_width) {
                 $char = trim(substr($cell, $i, $cell_width));
                 if (in_array($char, array_keys($types))) {
@@ -239,7 +242,7 @@ class ShipFile extends IVFile {
             }
         }
         if (isset($cells['Habitation'])) {
-            $cells['HabitationCapacity'] = floor($cells['Habitation']/9);
+            $cells['HabitationCapacity'] = (int) floor($cells['Habitation']/9);
         }
 
         return $cells;
@@ -256,14 +259,8 @@ class ShipFile extends IVFile {
         if (!$this->section_exists('Objects')) {
             return 0;
         }
-        $count = 0;
-        foreach ($this->get_section('Objects')->sections as $object) {
-            if ($object->content['Type'] == $label) {
-                $count++;
-            }
-        }
 
-        return $count;
+        return count($this->get_object_content($label));
     }
 
     /**
@@ -272,14 +269,17 @@ class ShipFile extends IVFile {
      * @param string $label the object to retrieve
      * @param string $item  a particular property of the objects to retrieve
      *
-     * @return string[][] the content information
+     * @return array<string[]|string> the content information
      */
     public function get_object_content($label, $item = null) {
         if (!$this->section_exists('Objects')) {
             return array();
         }
         $content = array();
-        foreach ($this->sections['Objects']->sections as $object) {
+        foreach ($this->get_unique_section('Objects')->sections as $object) {
+            if (is_array($object)) {
+                $object = $object[count($object)-1];
+            }
             if ($object->content['Type'] == $label) {
                 if ($item != null && isset($object->content[$item])) {
                     $content[] = $object->content[$item];

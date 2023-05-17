@@ -8,7 +8,7 @@ abstract class TestCase extends BaseTestCase {
     /**
      * Normalize expectException function between PHPUnit 4 and PHPUnit 5.
      *
-     * @param string $class the exception class to expect
+     * @param class-string<\Throwable> $class the exception class to expect
      *
      * @return void
      */

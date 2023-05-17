@@ -1,9 +1,18 @@
 parameters:
-	level: 6
+	level: 9
 	paths:
 		- src
 		- tests
 	ignoreErrors:
 		-
 			message: '#^Method Tests\\[^\:]+\:\:test[^\(]+\(\) has no return type specified\.$#'
+			path: tests/*
+		-
+			message: '#^Cannot access property \$([A-Za-z]*) on#'
+			path: tests/*
+		-
+			message: '#^Parameter \#1 \$var of function count expects array\|Countable, array\<Totengeist\\IVParser\\Section\>\|Totengeist\\IVParser\\Section given.$#'
+			path: tests/*
+		-
+			message: '#^Parameter \#1 \$object of function get_class expects object, array\<Totengeist\\IVParser\\Section\>\|Totengeist\\IVParser\\Section given.$#'
 			path: tests/*

@@ -103,11 +103,11 @@ class SectionTest extends TestCase {
 
 class TestSection extends Section {
     /**
-     * @param string|string[] $structure the structure of the section and its subsections
-     * @param int             $level     the indentation level of the section in the original file
-     * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
+     * @param string[] $structure the structure of the section and its subsections
+     * @param int      $level     the indentation level of the section in the original file
+     * @param string[] $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($structure = null, $level = 0, $subfiles = array()) {
+    public function __construct($structure = array(), $level = 0, $subfiles = array()) {
         parent::__construct('', $structure, $level, $subfiles);
     }
 }

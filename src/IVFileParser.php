@@ -163,7 +163,10 @@ class Section {
      */
     public function check_subfile($path, $content, $level, $subfiles) {
         if (in_array($path, array_keys($subfiles))) {
-            return new $subfiles[$path]($content, $level, $subfiles);
+            /** @var Section $object */
+            $object = new $subfiles[$path]($content, $level, $subfiles);
+
+            return $object;
         }
 
         return new Section($path, $content, $level, $subfiles);
@@ -210,11 +213,57 @@ class Section {
     }
 
     /**
-     * Get a specific subsection.
+     * Ensure only a single section is returned.
+     *
+     * Most sections in an Introversion file are unique. Only a few are repeatable. Here we ensure
+     * that the last section found in the file is chosen when only a single section is expected.
      *
      * @param string $section_path a relative path to a subsection
      *
-     * @return Section|Section[] the specific subsection(s) requested or null if not found
+     * @return Section the specific unique section requested or null if not found
+     */
+    public function get_unique_section($section_path) {
+        $section = $this->get_section($section_path);
+        if ($section === array()) {
+            throw new SectionNotFoundException();
+        }
+        if (is_array($section)) {
+            return $section[count($section)-1];
+        }
+
+        return $section;
+    }
+
+    /**
+     * Ensure an array of sections is returned, even if only one exists.
+     *
+     * Some sections in an Introversion file are inteded to repeat. Here we ensure that an array is
+     * is returned even if only one file is found.
+     *
+     * @param string $section_path a relative path to a subsection
+     *
+     * @return Section[] the specific unique section requested or null if not found
+     */
+    public function get_repeatable_section($section_path) {
+        $section = $this->get_section($section_path);
+        if ($section === array()) {
+            throw new SectionNotFoundException();
+        }
+        if (!is_array($section)) {
+            return array($section);
+        }
+
+        return $section;
+    }
+
+    /**
+     * Get a specific subsection.
+     *
+     * @todo support looking inside arrays
+     *
+     * @param string $section_path a relative path to a subsection
+     *
+     * @return Section|Section[] the specific subsection(s) requested or an empty array if not found
      */
     public function get_section($section_path) {
         $path = explode('/', $section_path);

@@ -36,12 +36,7 @@ class SaveFile extends IVFile {
      */
     public function get_layers() {
         if ($this->section_exists('Layer')) {
-            $section = $this->get_section('Layer');
-            if (is_array($section)) {
-                return $section;
-            }
-
-            return array($section);
+            return $this->get_repeatable_section('Layer');
         }
 
         return array();
@@ -79,20 +74,22 @@ class SaveFile extends IVFile {
      * @return Section[] the mission information
      */
     public function get_missions() {
-        if ($this->section_exists('Layer')) {
-            $missions = array();
-            $section = $this->get_section('Missions/Missions');
-            if ($section == null) {
-                return array();
+        if (!$this->section_exists('Missions/Missions')) {
+            return array();
+        }
+        $missions = array();
+        $section = $this->get_unique_section('Missions/Missions');
+        if ($section == null) {
+            return array();
+        }
+        foreach ($section->sections as $mission) {
+            if (is_array($mission)) {
+                $mission = $mission[count($mission)-1];
             }
-            foreach ($section->sections as $mission) {
-                $missions[] = $mission;
-            }
-
-            return $missions;
+            $missions[] = $mission;
         }
 
-        return array();
+        return $missions;
     }
 
     /**
@@ -102,7 +99,7 @@ class SaveFile extends IVFile {
      */
     public function get_galaxy_info() {
         $info = array();
-        $galaxy = $this->get_section('Galaxy')->content;
+        $galaxy = $this->get_unique_section('Galaxy')->content;
         $info['SectorCount'] = isset($galaxy['SectorCount']) ? intval($galaxy['SectorCount']) : 0;
         $info['CurrentSystem'] = intval($galaxy['CurrentSystem']);
         $info['EntrySystem'] = intval($galaxy['EntrySystem']);
@@ -140,6 +137,9 @@ class SaveFile extends IVFile {
             $hostiles = count($this->get_ships('HostileShip'));
             $ships = array();
             foreach ($fleet as $ship) {
+                if (is_array($ship)) {
+                    $ship = $ship[count($ship)-1];
+                }
                 $ships[] = $ship->content['Name'];
             }
         } else {
