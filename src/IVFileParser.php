@@ -18,7 +18,9 @@ use Totengeist\IVParser\Exception\SectionNotFoundException;
  * A Section includes all metadata and sub-sections within it, implementing a relative pathing
  * structure for retrieving specific sub-sections.
  */
-class Section {
+class Section implements \Stringable {
+    /** @var bool whether the section is an array */
+    public $array = false;
     /** @var string the section's path, relative to the base */
     public $path = '';
     /** @var string[] the section's meta data */
@@ -105,6 +107,7 @@ class Section {
                         $section_title = trim($matches[1]);
                         preg_match("/^\"\[i ([0-9]+)\]\"$/i", $section_title, $title_check);
                         if ($title_check) {
+                            $this->array = true;
                             $section_title = (int) $title_check[1];
                         }
                         if (!isset($matches[2])) {
@@ -124,6 +127,7 @@ class Section {
                         $key = trim($matches[1]);
                         preg_match("/^\"\[i ([0-9]+)\]\"$/i", $key, $title_check);
                         if ($title_check) {
+                            $this->array = true;
                             $key = (int) $title_check[1];
                         }
                         $start = $i+1;
@@ -228,7 +232,7 @@ class Section {
             throw new SectionNotFoundException();
         }
         if (is_array($section)) {
-            return $section[count($section)-1];
+            return end($section);
         }
 
         return $section;
@@ -277,6 +281,95 @@ class Section {
         }
 
         return $content;
+    }
+
+    /**
+     * Convert the section into a string.
+     *
+     * @param string $path      the label to assign to the section
+     * @param int    $level     the indentation level
+     * @param int    $col_width the column width to pad the label to
+     * @param bool   $in_array  is this section part of an array?
+     *
+     * @return string The section converted to a string
+     */
+    public function toString($path = '', $level = -1, $col_width = 1, $in_array = false) {
+        $content_key_length = 2;
+        $section_key_length = 1;
+        foreach (array_keys($this->content) as $content_key) {
+            $length = (int) ceil(strlen($content_key)/10);
+            if ($length > $content_key_length) {
+                $content_key_length = $length;
+            }
+        }
+        foreach (array_keys($this->sections) as $section_key) {
+            $length = (int) ceil(strlen($section_key)/10);
+            if ($length > $section_key_length) {
+                $section_key_length = $length;
+            }
+        }
+
+        $string = '';
+        $end = '';
+
+        if ($level !== -1) {
+            if ($in_array) {
+                $path = "\"[i $path]\" ";
+                $string = str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width+2) . ' ';
+            } else {
+                $string = str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width) . ' ';
+            }
+            $end = str_repeat('    ', $level) . "END\n";
+        }
+
+        if ($this->sections === array() && $this->content === array()) {
+            if ($in_array) {
+                return str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width+2) . " END\n";
+            }
+
+            return str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width) . " END\n";
+        }
+
+        if (count($this->sections) == 0 && count($this->content) < 11) {
+            $end = "END\n";
+            foreach ($this->content as $key => $content) {
+                if (strpos($content, ' ') !== false) {
+                    $string .= "$key \"$content\"  ";
+                } else {
+                    $string .= "$key $content  ";
+                }
+            }
+        } else {
+            foreach ($this->content as $key => $content) {
+                if (strpos($content, ' ') !== false) {
+                    $string .= "\n" . str_repeat('    ', $level + 1) . str_pad($key, 10*$content_key_length) . " \"$content\"  ";
+                } else {
+                    $string .= "\n" . str_repeat('    ', $level + 1) . str_pad($key, 10*$content_key_length) . " $content  ";
+                }
+            }
+            $string .= "\n";
+            foreach ($this->sections as $key => $section) {
+                if (is_array($section)) {
+                    foreach ($section as $sub) {
+                        $string .= $sub->toString($key, $level + 1, $section_key_length, $this->array);
+                    }
+                } else {
+                    $string .= $section->toString($key, $level + 1, $section_key_length, $this->array);
+                }
+            }
+        }
+        $string .= $end;
+
+        return $string;
+    }
+
+    /**
+     * Convert the section into a string.
+     *
+     * @return string The section converted to a string
+     */
+    public function __toString() {
+        return $this->toString();
     }
 }
 
@@ -350,7 +443,7 @@ class IVFile extends Section {
     }
 
     /**
-     * Verify the given structure is a save file.
+     * Verify the given structure is valid.
      *
      * We check for sections and content required in the given file.
      *
