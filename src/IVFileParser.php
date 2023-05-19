@@ -18,7 +18,7 @@ use Totengeist\IVParser\Exception\SectionNotFoundException;
  * A Section includes all metadata and sub-sections within it, implementing a relative pathing
  * structure for retrieving specific sub-sections.
  */
-class Section implements \Stringable {
+class Section {
     /** @var bool whether the section is an array */
     public $array = false;
     /** @var string the section's path, relative to the base */
