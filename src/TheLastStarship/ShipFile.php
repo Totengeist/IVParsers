@@ -282,8 +282,12 @@ class ShipFile extends IVFile {
                 $object = $object[count($object)-1];
             }
             if ($object->content['Type'] == $label) {
-                if ($item != null && isset($object->content[$item])) {
-                    $content[] = $object->content[$item];
+                if ($item != null) {
+                    if (isset($object->content[$item])) {
+                        $content[] = $object->content[$item];
+                    } else {
+                        continue;
+                    }
                 } else {
                     $content[] = $object->content;
                 }
