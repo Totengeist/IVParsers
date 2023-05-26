@@ -1,8 +1,9 @@
 <?php
 
-namespace Totengeist\IVParser;
+namespace Totengeist\IVParser\TheLastStarship;
 
 use Totengeist\IVParser\Exception\InvalidFileException;
+use Totengeist\IVParser\IVFile;
 
 /**
  * Classes necessary for processing a `.ship` file.
@@ -99,7 +100,7 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]|string>> the items, grouped by type
      */
-    private function get_items_by_type($type) {
+    public function get_items_by_type($type) {
         $items = array();
 
         foreach ($type as $item) {
@@ -173,7 +174,7 @@ class ShipFile extends IVFile {
      *
      * @return int[] the item counts, grouped by type
      */
-    private function get_item_counts_by_type($type) {
+    public function get_item_counts_by_type($type) {
         $counts = array();
 
         foreach ($type as $key) {

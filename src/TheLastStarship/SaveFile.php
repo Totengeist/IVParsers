@@ -1,8 +1,10 @@
 <?php
 
-namespace Totengeist\IVParser;
+namespace Totengeist\IVParser\TheLastStarship;
 
 use Totengeist\IVParser\Exception\InvalidFileException;
+use Totengeist\IVParser\IVFile;
+use Totengeist\IVParser\Section;
 
 /**
  * Classes necessary for processing a `.space` file.
@@ -22,7 +24,7 @@ class SaveFile extends IVFile {
      * @param int             $level     the indentation level of the section in the original file
      * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
-    public function __construct($structure = array(), $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\ShipFile')) {
+    public function __construct($structure = array(), $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\TheLastStarship\ShipFile')) {
         parent::__construct($structure, $level, $subfiles);
         if (!$this->is_valid() && $structure !== array()) {
             throw new InvalidFileException('save');
