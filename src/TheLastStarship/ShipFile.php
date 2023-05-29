@@ -1,13 +1,13 @@
 <?php
 
+/**
+ * Classes necessary for processing a `.ship` file.
+ */
+
 namespace Totengeist\IVParser\TheLastStarship;
 
 use Totengeist\IVParser\Exception\InvalidFileException;
 use Totengeist\IVParser\IVFile;
-
-/**
- * Classes necessary for processing a `.ship` file.
- */
 class ShipFile extends IVFile {
     protected static $REQUIRED_SECTIONS = array('Habitation');
 

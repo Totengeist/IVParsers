@@ -1,4 +1,7 @@
 <?php
+/**
+ * Classes necessary for processing a `.space` file.
+ */
 
 namespace Totengeist\IVParser\TheLastStarship;
 
@@ -6,12 +9,6 @@ use Totengeist\IVParser\Exception\InvalidFileException;
 use Totengeist\IVParser\IVFile;
 use Totengeist\IVParser\Section;
 
-/**
- * Classes necessary for processing a `.space` file.
- *
- * A save file for The Last Starship can contain subfiles such as:
- *  * ships
- */
 class SaveFile extends IVFile {
     protected static $REQUIRED_SECTIONS = array('Galaxy');
 
@@ -34,11 +31,14 @@ class SaveFile extends IVFile {
     /**
      * Retrieve ships stored in the save file.
      *
-     * @return Section[] the ship files
+     * @return ShipFile[] the ship files
      */
     public function get_layers() {
         if ($this->section_exists('Layer')) {
-            return $this->get_repeatable_section('Layer');
+            /** @var ShipFile[] $layers */
+            $layers = $this->get_repeatable_section('Layer');
+
+            return $layers;
         }
 
         return array();
@@ -49,7 +49,7 @@ class SaveFile extends IVFile {
      *
      * @param string $type the type of ships to retrieve
      *
-     * @return Section[]|array<string, Section[]> the ship files
+     * @return ShipFile[]|array<string, ShipFile[]> the ship files
      */
     public function get_ships($type = null) {
         $ships = array();
