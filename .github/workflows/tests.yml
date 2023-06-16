@@ -1,4 +1,4 @@
-name: phpunit
+name: tests
 
 on: [push, pull_request]
 
@@ -65,4 +65,4 @@ jobs:
       run: |
         composer require --dev phpstan/phpstan
         vendor/bin/phpstan analyse
-      if: ${{ matrix.php == '8.2' }}
+      if: ${{ matrix.php == '8.2' && matrix.runner == 'ubuntu-22.04' }}
