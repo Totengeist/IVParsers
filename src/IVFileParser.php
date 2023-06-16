@@ -46,35 +46,6 @@ class Section {
         }
     }
 
-    // @codeCoverageIgnoreStart
-
-    /**
-     * Print a "tree" of sections and subsections.
-     *
-     * This is primarily a debug function and prints sections paths recursively.
-     *
-     * @param string[] $ignore paths to ignore in the tree
-     *
-     * @return void
-     */
-    public function print_section_tree($ignore = array()) {
-        if (in_array($this->path, $ignore)) {
-            return;
-        }
-        echo $this->path . "\n";
-        foreach ($this->sections as $section) {
-            if (is_array($section)) {
-                foreach ($section as $sec) {
-                    $sec->print_section_tree($ignore);
-                }
-            } else {
-                $section->print_section_tree($ignore);
-            }
-        }
-    }
-
-    // @codeCoverageIgnoreEnd
-
     /**
      * Create subsections recursively based on a given structure.
      *
@@ -224,15 +195,15 @@ class Section {
      *
      * @param string $section_path a relative path to a subsection
      *
-     * @return Section the specific unique section requested or null if not found
+     * @return Section the specific unique section requested
      */
     public function get_unique_section($section_path) {
         $section = $this->get_section($section_path);
-        if ($section === array()) {
-            throw new SectionNotFoundException();
-        }
         if (is_array($section)) {
-            return end($section);
+            /** @var Section */
+            $section = end($section);
+
+            return $section;
         }
 
         return $section;
@@ -246,13 +217,10 @@ class Section {
      *
      * @param string $section_path a relative path to a subsection
      *
-     * @return Section[] the specific unique section requested or null if not found
+     * @return Section[] the specific repeatable section requested
      */
     public function get_repeatable_section($section_path) {
         $section = $this->get_section($section_path);
-        if ($section === array()) {
-            throw new SectionNotFoundException();
-        }
         if (!is_array($section)) {
             return array($section);
         }
@@ -445,7 +413,7 @@ class IVFile extends Section {
     /**
      * Verify the given structure is valid.
      *
-     * We check for sections and content required in the given file.
+     * We check to make sure the file can be parsed, regardless of required content or sections.
      *
      * @param string|string[] $structure the structure of the section and its subsections
      * @param int             $level     the indentation level of the section in the original file

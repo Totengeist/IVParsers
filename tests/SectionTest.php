@@ -99,6 +99,69 @@ class SectionTest extends TestCase {
         $this->assertTrue($section->section_exists('TestSection'));
         $this->assertEquals(get_class($section->sections['TestSection']), "Tests\TestSection");
     }
+
+    public function testCanGetUniqueSection() {
+        $section = new Section('', array('BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'));
+        $section = $section->get_unique_section('TestSection');
+        $this->assertEquals($section->content['Key1'], 'Value1');
+
+        $section = new Section('', array('BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END', 'BEGIN TestSection', '    Key1 Value3', '    Key2 Value 4', 'END'));
+        $section = $section->get_unique_section('TestSection');
+        $this->assertEquals($section->content['Key1'], 'Value3');
+
+        $this->customExpectException('Totengeist\IVParser\Exception\SectionNotFoundException');
+        $section = new Section('', array(), 0, array('/TestSection' => "Tests\TestSection"));
+        $section->get_unique_section('TestSection');
+    }
+
+    public function testCanGetRepeatableSection() {
+        $section = new Section('', array('BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'));
+        $section = $section->get_repeatable_section('TestSection');
+        $this->assertEquals($section[0]->content['Key1'], 'Value1');
+
+        $section = new Section('', array('BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END', 'BEGIN TestSection', '    Key1 Value3', '    Key2 Value 4', 'END'));
+        $section = $section->get_repeatable_section('TestSection');
+        $this->assertEquals($section[1]->content['Key1'], 'Value3');
+
+        $this->customExpectException('Totengeist\IVParser\Exception\SectionNotFoundException');
+        $section = new Section('', array(), 0, array('/TestSection' => "Tests\TestSection"));
+        $section->get_repeatable_section('TestSection');
+    }
+
+    public function testCanConvertSectionToString() {
+        $section = new Section('', array(
+            'TestKey1  Testing',
+            'TestKey2  "Testing with spaces"',
+            'BEGIN TestSection1',
+            '    TestKey1  Testing',
+            'END',
+            'BEGIN TestSection2',
+            '    BEGIN "[i 1]"    Key1 Value1    Key2 "Value 2"  END',
+            '    BEGIN "[i 3]"',
+            '        Key1HasAReallyLongName Value1',
+            '        Key2 "Value 2"',
+            '        BEGIN TestSubsection1 END',
+            '    END',
+            '    BEGIN "[i 4]"  END',
+            'END',
+            'BEGIN TestSection2  END',
+        ));
+        $this->assertEquals((string) $section, "\n" .
+            "TestKey1             Testing  \n" .
+            "TestKey2             \"Testing with spaces\"  \n" .
+            "BEGIN TestSection1         TestKey1 Testing  END\n" .
+            "BEGIN TestSection2         \n" .
+            "    BEGIN \"[i 1]\"      Key1 Value1  Key2 \"Value 2\"  END\n" .
+            "    BEGIN \"[i 3]\"      \n" .
+            "        Key1HasAReallyLongName         Value1  \n" .
+            "        Key2                           \"Value 2\"  \n" .
+            "        BEGIN TestSubsection1      END\n" .
+            "    END\n" .
+            "    BEGIN \"[i 4]\"      END\n" .
+            "END\n" .
+            "BEGIN TestSection2         END\n"
+        );
+    }
 }
 
 class TestSection extends Section {

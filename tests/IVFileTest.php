@@ -47,4 +47,29 @@ END
         $this->assertTrue($file->section_exists('Deliveries'));
         $this->assertEquals($file->get_section('Deliveries')->content['Timer'], '0.055459458380937576');
     }
+
+    public function testStructureIsValid() {
+        $section = new TestIVFile(array('Key1 Value1', 'BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'));
+        $this->assertTrue($section->is_valid());
+
+        $section = new TestIVFile(array('BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'));
+        $this->assertFalse($section->is_valid());
+
+        $section = new TestIVFile(array('Key1 Value1'));
+        $this->assertFalse($section->is_valid());
+    }
+}
+
+class TestIVFile extends IVFile {
+    protected static $REQUIRED_CONTENT = array('Key1');
+    protected static $REQUIRED_SECTIONS = array('TestSection');
+
+    /**
+     * @param string[] $structure the structure of the section and its subsections
+     * @param int      $level     the indentation level of the section in the original file
+     * @param string[] $subfiles  an array of IVFile-inheriting classes and their paths
+     */
+    public function __construct($structure = array(), $level = 0, $subfiles = array()) {
+        parent::__construct($structure, $level, $subfiles);
+    }
 }

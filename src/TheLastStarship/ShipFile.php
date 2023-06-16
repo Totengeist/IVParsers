@@ -8,6 +8,7 @@ namespace Totengeist\IVParser\TheLastStarship;
 
 use Totengeist\IVParser\Exception\InvalidFileException;
 use Totengeist\IVParser\IVFile;
+
 class ShipFile extends IVFile {
     protected static $REQUIRED_SECTIONS = array('Habitation');
 
