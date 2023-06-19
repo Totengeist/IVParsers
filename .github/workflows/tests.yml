@@ -66,4 +66,4 @@ jobs:
         composer require --dev phpstan/phpstan
         composer style-check
         vendor/bin/phpstan analyse
-      if: ${{ matrix.php == '8.2' && matrix.runner == 'ubuntu-22.04' }}
+      if: ${{ matrix.php == '8.1' && matrix.runner == 'ubuntu-22.04' }}
