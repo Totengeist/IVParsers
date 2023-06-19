@@ -5,7 +5,7 @@ namespace Tests;
 use Totengeist\IVParser\TheLastStarship\ShipFile;
 
 class ShipFileTest extends TestCase {
-    const EXAMPLE_SHIP = '
+    public const EXAMPLE_SHIP = '
 Id                   0  
 Name                 Empty  
 Type                 FriendlyShip  

@@ -16,17 +16,17 @@ $config
         'no_useless_else' => true,
         'no_useless_return' => true,
         'ordered_imports' => true,
-        'pre_increment' => false,
+        'increment_style' => 'post',
         'increment_style' => false,
         'simplified_null_return' => false,
-        'trailing_comma_in_multiline_array' => false,
+        'trailing_comma_in_multiline' => false,
         'yoda_style' => false,
         'indentation_type' => true,
 
         'phpdoc_no_package' => false,
         'phpdoc_order' => true,
         'phpdoc_summary' => true,
-        'phpdoc_types_order' => array('null_adjustment' => 'none', 'sort_algorithm' => 'none'),
+        'phpdoc_types_order' => array('null_adjustment' => 'always_last', 'sort_algorithm' => 'none'),
         
         'braces' => [
             'position_after_functions_and_oop_constructs' => 'same'
