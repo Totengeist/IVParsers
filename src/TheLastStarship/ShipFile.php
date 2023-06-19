@@ -11,7 +11,6 @@ use Totengeist\IVParser\IVFile;
 
 class ShipFile extends IVFile {
     protected static $REQUIRED_SECTIONS = array('Habitation');
-
     /**
      * The types of ships available in the game.
      *
@@ -20,18 +19,29 @@ class ShipFile extends IVFile {
      *  * NeutralShip - an NPC ship controlled by AI
      *  * ShipForSale - a ship hull available to a shipyard that can be purchased by the player
      *  * Derelict - a stranded ship that can be looted
+     *
+     * @var string[]
      */
-    const SHIPS = array('FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict');
+    public static $SHIPS = array('FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict');
 
-    const WEAPONS = array('GatlingGun', 'Cannon', 'Railgun');
-    const ENGINES = array('Engine');
-    const POWER = array('Reactor', 'FusionReactor');
-    const LOGISTICS = array('MiningLaser', 'DroneBay');
-    const THRUSTERS = array('Thruster');
-    const CELLS = array('Hull', 'Interior', 'Floor', 'Habitation', 'Armour');
-    const CELL_TYPES = array('Storage');
-    const TANKS = array('TinyTank', 'SmallTank', 'Tank');
-    const RESOURCES = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium');
+    /** @var string[] */
+    public static $WEAPONS = array('GatlingGun', 'Cannon', 'Railgun');
+    /** @var string[] */
+    public static $ENGINES = array('Engine');
+    /** @var string[] */
+    public static $POWER = array('Reactor', 'FusionReactor');
+    /** @var string[] */
+    public static $LOGISTICS = array('MiningLaser', 'DroneBay');
+    /** @var string[] */
+    public static $THRUSTERS = array('Thruster');
+    /** @var string[] */
+    public static $CELLS = array('Hull', 'Interior', 'Floor', 'Habitation', 'Armour');
+    /** @var string[] */
+    public static $CELL_TYPES = array('Storage');
+    /** @var string[] */
+    public static $TANKS = array('TinyTank', 'SmallTank', 'Tank');
+    /** @var string[] */
+    public static $RESOURCES = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium');
 
     /**
      * An intermediary constructor.
@@ -57,7 +67,7 @@ class ShipFile extends IVFile {
     public function get_tank_capacity_by_type() {
         $tanks = array();
 
-        foreach (self::RESOURCES as $resource) {
+        foreach (static::$RESOURCES as $resource) {
             $tanks[$resource] = 0.0;
         }
 
@@ -119,7 +129,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> weapons, grouped by type
      */
     public function get_weapons() {
-        return $this->get_items_by_type(self::WEAPONS);
+        return $this->get_items_by_type(static::$WEAPONS);
     }
 
     /**
@@ -128,7 +138,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> engines, grouped by type
      */
     public function get_engines() {
-        return $this->get_items_by_type(self::ENGINES);
+        return $this->get_items_by_type(static::$ENGINES);
     }
 
     /**
@@ -137,7 +147,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> logistics equipment, grouped by type
      */
     public function get_logistics() {
-        return $this->get_items_by_type(self::LOGISTICS);
+        return $this->get_items_by_type(static::$LOGISTICS);
     }
 
     /**
@@ -146,7 +156,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> generators, grouped by type
      */
     public function get_generators() {
-        return $this->get_items_by_type(self::POWER);
+        return $this->get_items_by_type(static::$POWER);
     }
 
     /**
@@ -155,7 +165,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> thrusters, grouped by type
      */
     public function get_thrusters() {
-        return $this->get_items_by_type(self::THRUSTERS);
+        return $this->get_items_by_type(static::$THRUSTERS);
     }
 
     /**
@@ -164,7 +174,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> tanks, grouped by type
      */
     public function get_tanks() {
-        return $this->get_items_by_type(self::TANKS);
+        return $this->get_items_by_type(static::$TANKS);
     }
 
     /**
@@ -215,9 +225,9 @@ class ShipFile extends IVFile {
                 $types[$name] = array();
             } else {
                 foreach ($cell->content as $key => $type) {
-                    if (in_array($key, self::CELLS)) {
+                    if (in_array($key, static::$CELLS)) {
                         $types[$name][] = $key;
-                    } elseif (in_array($key, self::CELL_TYPES)) {
+                    } elseif (in_array($key, static::$CELL_TYPES)) {
                         $key = 'Storage ' . $type;
                         $types[$name][] = $key;
                     } else {
