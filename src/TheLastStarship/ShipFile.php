@@ -27,10 +27,10 @@ class ShipFile extends IVFile {
     const ENGINES = array('Engine');
     const POWER = array('Reactor', 'FusionReactor');
     const LOGISTICS = array('MiningLaser', 'DroneBay');
-    const THRUSTERS = array('Thrusters');
+    const THRUSTERS = array('Thruster');
     const CELLS = array('Hull', 'Interior', 'Floor', 'Habitation', 'Armour');
     const CELL_TYPES = array('Storage');
-    const TANKS = array('TinyTank', 'Small Tank', 'Tank');
+    const TANKS = array('TinyTank', 'SmallTank', 'Tank');
     const RESOURCES = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium');
 
     /**
@@ -64,9 +64,6 @@ class ShipFile extends IVFile {
         foreach ($this->get_tanks() as $tank_type) {
             foreach ($tank_type as $tank) {
                 if (isset($tank['Resource']) && isset($tank['Capacity'])) {
-                    if (!isset($tanks[$tank['Resource']])) {
-                        $tanks[$tank['Resource']] = 0.0;
-                    }
                     $tanks[$tank['Resource']] += (float) $tank['Capacity'];
                 }
             }
@@ -83,11 +80,10 @@ class ShipFile extends IVFile {
     public function get_generator_count_and_output() {
         $output = 0;
         $count = array();
-        foreach (self::POWER as $generator) {
-            $count[$generator] = 0;
-            foreach ($this->get_object_content($generator, 'PowerOutput') as $power) {
-                $output += (float) $power;
-                $count[$generator]++;
+        foreach ($this->get_generators() as $type => $generators) {
+            $count[$type] = count($generators);
+            foreach ($generators as $power) {
+                $output += (float) $power['PowerOutput'];
             }
         }
 
@@ -97,11 +93,14 @@ class ShipFile extends IVFile {
     /**
      * Get items by type given an associative array of types.
      *
-     * @param string[] $type a list of the objects to retrieve
+     * @param string[]|string $type a list of the objects to retrieve
      *
-     * @return array<string, array<string[]|string>> the items, grouped by type
+     * @return array<string, array<string[]>> the items, grouped by type
      */
     public function get_items_by_type($type) {
+        if (is_string($type)) {
+            $type = array($type);
+        }
         $items = array();
 
         foreach ($type as $item) {
@@ -117,7 +116,7 @@ class ShipFile extends IVFile {
     /**
      * Get weapons by type.
      *
-     * @return array<string, array<string[]|string>> weapons, grouped by type
+     * @return array<string, array<string[]>> weapons, grouped by type
      */
     public function get_weapons() {
         return $this->get_items_by_type(self::WEAPONS);
@@ -126,7 +125,7 @@ class ShipFile extends IVFile {
     /**
      * Get engines by type.
      *
-     * @return array<string, array<string[]|string>> engines, grouped by type
+     * @return array<string, array<string[]>> engines, grouped by type
      */
     public function get_engines() {
         return $this->get_items_by_type(self::ENGINES);
@@ -135,7 +134,7 @@ class ShipFile extends IVFile {
     /**
      * Get logistics equipment by type.
      *
-     * @return array<string, array<string[]|string>> logistics equipment, grouped by type
+     * @return array<string, array<string[]>> logistics equipment, grouped by type
      */
     public function get_logistics() {
         return $this->get_items_by_type(self::LOGISTICS);
@@ -144,7 +143,7 @@ class ShipFile extends IVFile {
     /**
      * Get generators by type.
      *
-     * @return array<string, array<string[]|string>> generators, grouped by type
+     * @return array<string, array<string[]>> generators, grouped by type
      */
     public function get_generators() {
         return $this->get_items_by_type(self::POWER);
@@ -153,7 +152,7 @@ class ShipFile extends IVFile {
     /**
      * Get thrusters by type.
      *
-     * @return array<string, array<string[]|string>> thrusters, grouped by type
+     * @return array<string, array<string[]>> thrusters, grouped by type
      */
     public function get_thrusters() {
         return $this->get_items_by_type(self::THRUSTERS);
@@ -162,7 +161,7 @@ class ShipFile extends IVFile {
     /**
      * Get tanks by type.
      *
-     * @return array<string, array<string[]|string>> tanks, grouped by type
+     * @return array<string, array<string[]>> tanks, grouped by type
      */
     public function get_tanks() {
         return $this->get_items_by_type(self::TANKS);
@@ -202,8 +201,9 @@ class ShipFile extends IVFile {
         $cells = array();
         foreach ($this->get_unique_section('GridMap/Palette')->sections as $cell) {
             if (is_array($cell)) {
-                continue;
+                $cell = end($cell);
             }
+            /** @var \Totengeist\IVParser\Section $cell */
             $path = explode('/', $cell->path);
             $name = $path[count($path)-1];
             // If the name is empty, the character is '/' and was exploded.
@@ -271,7 +271,7 @@ class ShipFile extends IVFile {
      * @param string $label the object to retrieve
      * @param string $item  a particular property of the objects to retrieve
      *
-     * @return array<string[]|string> the content information
+     * @return ($item is null ? array<string[]> : array<string>) the content information
      */
     public function get_object_content($label, $item = null) {
         if (!$this->section_exists('Objects')) {
@@ -297,58 +297,4 @@ class ShipFile extends IVFile {
 
         return $content;
     }
-
-    // @codeCoverageIgnoreStart
-
-    /**
-     * Debug print function that should be replaced with something more useful.
-     *
-     * @return void
-     */
-    public function print_info() {
-        $info = array();
-        $info['Type'] = $this->content['Type'];
-        $info['Name'] = $this->content['Name'];
-        $info['Mass'] = isset($this->content['Mass']) ? (float) $this->content['Mass'] : 0;
-        $info['Engines'] = $this->get_item_counts_by_type(self::ENGINES);
-        $info['Weapons'] = $this->get_item_counts_by_type(self::WEAPONS);
-        $info['Logistics'] = $this->get_item_counts_by_type(self::LOGISTICS);
-        $result = $this->get_generator_count_and_output();
-        $power_output = $result[0];
-        $info['Generators'] = $result[1];
-        $info['TankCapacity'] = $this->get_tank_capacity_by_type();
-        foreach ($this->get_cell_info() as $key => $cell) {
-            $shortkey = str_replace('Storage ', '', $key);
-            if ($key == $shortkey) {
-                $info['Structure'][$key] = $cell;
-            } else {
-                $info['Storage'][$shortkey] = $cell;
-            }
-        }
-
-        ksort($info);
-        $weapon_count = 0;
-        foreach ($info['Weapons'] as $count) {
-            $weapon_count += $count;
-        }
-        $engine_count = 0;
-        foreach ($info['Engines'] as $count) {
-            $engine_count += $count;
-        }
-        $generators = 0;
-        foreach ($info['Generators'] as $count) {
-            $generators += $count;
-        }
-        $template = 'Your ship is named %s. It has %3d weapons and %3d engines. Its %3d power generators generate %01.2f Mw.';
-        echo sprintf($template,
-            $info['Name'],
-            $weapon_count,
-            $engine_count,
-            $generators,
-            $power_output
-        );
-        print_r($info);
-    }
-
-    // @codeCoverageIgnoreEnd
 }
