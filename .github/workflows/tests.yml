@@ -63,7 +63,7 @@ jobs:
 
     - name: Run phpstan suite
       run: |
-        composer require --dev phpstan/phpstan
+        composer require --dev friendsofphp/php-cs-fixer phpstan/phpstan
         composer style-check
         vendor/bin/phpstan analyse
       if: ${{ matrix.php == '7.4' && matrix.runner == 'ubuntu-22.04' }}
