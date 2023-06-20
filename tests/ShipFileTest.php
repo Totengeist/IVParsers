@@ -5,7 +5,8 @@ namespace Tests;
 use Totengeist\IVParser\TheLastStarship\ShipFile;
 
 class ShipFileTest extends TestCase {
-    public const EXAMPLE_SHIP = '
+    /** @var string */
+    public static $EXAMPLE_SHIP = '
 Id                   0  
 Name                 Empty  
 Type                 FriendlyShip  
@@ -64,23 +65,23 @@ END
     }
 
     public function testCanCheckValidShipStructure() {
-        $this->assertTrue(ShipFile::is_valid_structure(self::EXAMPLE_SHIP));
+        $this->assertTrue(ShipFile::is_valid_structure(static::$EXAMPLE_SHIP));
     }
 
     public function testCanCheckInvalidShipStructure() {
-        $ship = str_replace("BEGIN Habitation SewageTimer 0.068042416666656891  END\n", '', self::EXAMPLE_SHIP);
+        $ship = str_replace("BEGIN Habitation SewageTimer 0.068042416666656891  END\n", '', static::$EXAMPLE_SHIP);
         $this->assertFalse(ShipFile::is_valid_structure($ship));
     }
 
     public function testCanCreateFullShipFile() {
-        $file = new ShipFile(self::EXAMPLE_SHIP);
+        $file = new ShipFile(static::$EXAMPLE_SHIP);
         $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
         $this->assertTrue($file->section_exists('Deliveries'));
         $this->assertEquals($file->get_section('Deliveries')->content['Timer'], '0.055459458380937576');
     }
 
     public function testCanCreateShipWithObjectsSection() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 0]"      
@@ -105,7 +106,7 @@ END';
     }
 
     public function testDuplicateObjectIdsRetrieveLastObject() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 0]"      
@@ -128,7 +129,7 @@ END';
     }
 
     public function testCanQueryObjectsOnShipWithoutObjectsSection() {
-        $file = new ShipFile(self::EXAMPLE_SHIP);
+        $file = new ShipFile(static::$EXAMPLE_SHIP);
         $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
         $this->assertFalse($file->section_exists('Objects'));
         $this->assertEquals($file->get_object_count('NotExistGun'), 0);
@@ -137,7 +138,7 @@ END';
     }
 
     public function testCanGetItemsByTypeWithString() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -157,7 +158,7 @@ END';
     }
 
     public function testCanGetItemCountsByType() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -191,7 +192,7 @@ END';
     }
 
     public function testCanGetWeapons() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     BEGIN "[i 8]"      
         Id                   21785  
@@ -308,7 +309,7 @@ END';
     }
 
     public function testCanGetEngines() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -325,7 +326,7 @@ END';
     }
 
     public function testCanGetLogistics() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -346,7 +347,7 @@ END';
     }
 
     public function testCanGetThrusters() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -363,7 +364,7 @@ END';
     }
 
     public function testCanGetTankCapacitiesByResource() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -413,7 +414,7 @@ END';
     }
 
     public function testCanGetGeneratorCountAndCapacity() {
-        $ship = self::EXAMPLE_SHIP . '
+        $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 158]"    
@@ -470,7 +471,7 @@ END';
 
     public function testCanGetCellInfo() {
         $ship = str_replace('        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', '        BEGIN ,          Hull false  Interior false  Habitation flase  Floor false  END
-        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', self::EXAMPLE_SHIP);
+        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', static::$EXAMPLE_SHIP);
         $file = new ShipFile($ship);
         $this->assertEquals($file->get_cell_info(), array(
             'Hull' => 258,

@@ -16,8 +16,7 @@ $config
         'no_useless_else' => true,
         'no_useless_return' => true,
         'ordered_imports' => true,
-        'increment_style' => 'post',
-        'increment_style' => false,
+        'increment_style' => ['style' => 'post'],
         'simplified_null_return' => false,
         'trailing_comma_in_multiline' => false,
         'yoda_style' => false,
@@ -27,10 +26,19 @@ $config
         'phpdoc_order' => true,
         'phpdoc_summary' => true,
         'phpdoc_types_order' => array('null_adjustment' => 'always_last', 'sort_algorithm' => 'none'),
-        
-        'braces' => [
-            'position_after_functions_and_oop_constructs' => 'same'
+
+        'curly_braces_position' => [
+            'control_structures_opening_brace' => 'same_line',
+            'functions_opening_brace' => 'same_line',
+            'classes_opening_brace' => 'same_line',
+            'anonymous_classes_opening_brace' => 'same_line',
+            'allow_single_line_empty_anonymous_classes' => true,
+            'allow_single_line_anonymous_functions' => true,
         ],
+
+        'no_superfluous_phpdoc_tags' => [
+            'allow_mixed' => true,
+        ]
     ))
     ->setIndent("    ")
     ->setLineEnding("\n")
