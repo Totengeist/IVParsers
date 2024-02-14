@@ -15,6 +15,7 @@ use Totengeist\IVParser\Section;
 class SpritebankFile extends IVFile {
     /** @var string[] paths of sections that must exist for it to be a valid file */
     protected static $REQUIRED_SECTIONS = array('Sprite');
+    protected static $FILE_TYPE = 'application/tls-spritebank+introversion';
 
     /**
      * An intermediary constructor.

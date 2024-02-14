@@ -352,6 +352,8 @@ class IVFile extends Section {
     protected static $REQUIRED_SECTIONS = array();
     /** @var string[] content items that must exist for it to be a valid file */
     protected static $REQUIRED_CONTENT = array();
+    /** @var string the file type identifier */
+    protected static $FILE_TYPE = 'application/introversion';
 
     /**
      * An intermediary constructor.
@@ -371,7 +373,7 @@ class IVFile extends Section {
     /**
      * An intermediary constructor.
      *
-     * The constructor for an IVFile handles parsing of data sent directory form a file (i.e. a
+     * The constructor for an IVFile handles parsing of data sent directly from a file (i.e. a
      * string) whereas a Section requires an array. The usual constructor is then called on that
      * data.
      *
@@ -434,5 +436,50 @@ class IVFile extends Section {
         }
 
         return true;
+    }
+
+    /**
+     * Get an identifier for which IVFile variant we're using.
+     *
+     * @return string the file type
+     */
+    public function file_type() {
+        return static::$FILE_TYPE;
+    }
+
+    /**
+     * Check if the file is a valid Introversion file, then find if it's a supported type.
+     *
+     * @param string $file the file to check
+     *
+     * @return string|false the file type or false
+     */
+    public static function check_file_type($file) {
+        try {
+            new IVFile($file);
+        } catch (InvalidFileException $e) {
+            return false;
+        }
+        $files = glob(__DIR__ . '/../src/**/*File.php');
+        if ($files === false) {
+            return false;
+        }
+        foreach ($files as $class_file) {
+            $class = str_replace(__DIR__ . '/../src/', '', $class_file);
+            $class = str_replace('.php', '', $class);
+            $class = '\\Totengeist\\IVParser\\' . str_replace('/', '\\', $class);
+            if (!class_exists($class)) {
+                include $file;
+            }
+            try {
+                $iv_file = new $class($file);
+            } catch (InvalidFileException $e) {
+                continue;
+            }
+
+            return $iv_file->file_type(); /* @phpstan-ignore-line */
+        }
+
+        return static::$FILE_TYPE;
     }
 }

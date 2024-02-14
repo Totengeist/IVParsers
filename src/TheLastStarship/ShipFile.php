@@ -11,6 +11,7 @@ use Totengeist\IVParser\IVFile;
 
 class ShipFile extends IVFile {
     protected static $REQUIRED_SECTIONS = array('Habitation');
+    protected static $FILE_TYPE = 'application/tls-ship+introversion';
     /**
      * The types of ships available in the game.
      *

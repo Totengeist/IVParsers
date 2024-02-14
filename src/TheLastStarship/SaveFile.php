@@ -11,6 +11,7 @@ use Totengeist\IVParser\Section;
 
 class SaveFile extends IVFile {
     protected static $REQUIRED_SECTIONS = array('Galaxy');
+    protected static $FILE_TYPE = 'application/tls-save+introversion';
 
     /**
      * An intermediary constructor.
