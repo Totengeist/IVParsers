@@ -15,7 +15,7 @@ jobs:
 
     name: PHP ${{ matrix.php }} on ${{ matrix.runner }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install PHP
       uses: shivammathur/setup-php@v2
@@ -28,16 +28,25 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
+    - name: Get Composer Cache Directory
+      id: composer-cache-restore
+      run: |
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+    - name: Restore Composer Cache Directory
+      uses: actions/cache/restore@v4
       with:
-        path: vendor
-        key: ${{ matrix.runner }}-php${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
-        restore-keys: ${{ matrix.runner }}-php${{ matrix.php }}-
+        path: ${{ steps.composer-cache-restore.outputs.dir }}
+        key: ${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-php${{ matrix.php }}-composer-
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Save Composer Cache
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ steps.composer-cache-restore.outputs.dir }}
+        key: ${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
 
     - name: Run test suite
       run: composer test
