@@ -10,9 +10,11 @@ namespace Totengeist\IVParser;
 abstract class Bug {
     /**
      * A description of the bug.
-     * @var bool
+     *
+     * @var string
      */
-    const DESCRIPTION = "No description provided.";
+    protected static $DESCRIPTION = 'No description provided.';
+
     /**
      * Check if the current file is affected by this bug.
      *

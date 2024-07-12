@@ -69,7 +69,7 @@ END
     }
 
     public function testCanCheckInvalidShipStructure() {
-        $ship = str_replace("BEGIN Habitation SewageTimer 0.068042416666656891  END\n", '', static::$EXAMPLE_SHIP);
+        $ship = str_replace('BEGIN Habitation SewageTimer 0.068042416666656891  END', '', static::$EXAMPLE_SHIP);
         $this->assertFalse(ShipFile::is_valid_structure($ship));
     }
 

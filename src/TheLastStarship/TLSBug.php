@@ -11,9 +11,9 @@ use Totengeist\IVParser\Bug;
  */
 abstract class TLSBug extends Bug {
     /** @var bool does the bug apply to Ship files? */
-    const IS_SHIP_BUG = false;
+    protected static $IS_SHIP_BUG = false;
     /** @var bool does the bug apply to Save files? */
-    const IS_SAVE_BUG = false;
+    protected static $IS_SAVE_BUG = false;
 
     /**
      * Check if the bug applies to Ship files.
@@ -21,7 +21,7 @@ abstract class TLSBug extends Bug {
      * @return bool
      */
     public static function isShipBug() {
-        return static::IS_SHIP_BUG;
+        return static::$IS_SHIP_BUG;
     }
 
     /**
@@ -30,6 +30,6 @@ abstract class TLSBug extends Bug {
      * @return bool
      */
     public static function isSaveBug() {
-        return static::IS_SAVE_BUG;
+        return static::$IS_SAVE_BUG;
     }
 }

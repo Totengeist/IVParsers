@@ -14,18 +14,19 @@ use Totengeist\IVParser\TheLastStarship\TLSBug;
 class TiddletBug extends TLSBug {
     /**
      * A description of the bug.
-     * @var bool
+     *
+     * @var string
      */
-    const DESCRIPTION = "Tiddlets that sustained damage are not accepted by The Trouble with Tiddlets and the mission gets stuck.";
+    protected static $DESCRIPTION = 'Tiddlets that sustained damage are not accepted by The Trouble with Tiddlets and the mission gets stuck.';
     /** @var bool does the bug apply to Ship files? */
-    const IS_SHIP_BUG = true;
+    protected static $IS_SHIP_BUG = true;
     /** @var bool does the bug apply to Save files? */
-    const IS_SAVE_BUG = true;
+    protected static $IS_SAVE_BUG = true;
 
     /**
      * Check if the current file is affected by this bug.
      *
-     * @param ShipFile|SaveFile $file the ship to analyze
+     * @param ShipFile|SaveFile $file the ship or save to analyze
      *
      * @return bool
      */
@@ -43,25 +44,27 @@ class TiddletBug extends TLSBug {
 
             return false;
         } elseif (get_class($file) == "Totengeist\IVParser\TheLastStarship\SaveFile") {
+            /** @var ShipFile[] $ships */
             $ships = $file->get_ships('FriendlyShip');
             if (count($ships) == 0) {
                 return false;
             }
             foreach ($ships as $ship) {
-                if ($this->hasBug($ship)) {
+                if (static::hasBug($ship)) {
                     return true;
                 }
             }
 
             return false;
         }
+
         return false;
     }
 
     /**
      * Attempt to fix the bug.
      *
-     * @param \Totengeist\IVParser\TheLastStarship\ShipFile $ship the ship to fix
+     * @param ShipFile|SaveFile $file the ship or save to fix
      *
      * @return bool was the bug successfully resolved?
      */
@@ -73,7 +76,7 @@ class TiddletBug extends TLSBug {
                 }
                 if ($object->content['Type'] == 'Tiddlet') {
                     if (isset($object->content['Damage'])) {
-                        $object->content['Damage'] = "0";
+                        $object->content['Damage'] = '0';
                     }
                 }
             }
@@ -83,9 +86,10 @@ class TiddletBug extends TLSBug {
                 return true;
             }
             foreach ($ships as $ship) {
-                $this->resolveBug($ship);
+                static::resolveBug($ship);
             }
         }
+
         return !static::hasBug($file);
     }
 }
