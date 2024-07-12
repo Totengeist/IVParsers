@@ -105,8 +105,8 @@ class SaveFile extends IVFile {
         $galaxy = $this->get_unique_section('Galaxy')->content;
         $info['SectorCount'] = isset($galaxy['SectorCount']) ? intval($galaxy['SectorCount']) : 0;
         $info['CurrentSystem'] = intval($galaxy['CurrentSystem']);
-        $info['EntrySystem'] = intval($galaxy['EntrySystem']);
-        $info['ExitSystem'] = intval($galaxy['ExitSystem']);
+        $info['EntrySystem'] = isset($galaxy['EntrySystem']) ? intval($galaxy['EntrySystem']) : -1;
+        $info['ExitSystem'] = isset($galaxy['ExitSystem']) ? intval($galaxy['ExitSystem']) : -1;
 
         return $info;
     }

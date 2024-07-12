@@ -1,5 +1,9 @@
+/.phpdoc/
 /coverage/
 /vendor/
+/docs/
+/.php-cs-fixer.cache
 /.php_cs.cache
 /.phpunit.result.cache
 /composer.lock
+*.bak
