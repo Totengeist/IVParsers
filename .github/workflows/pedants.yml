@@ -1,0 +1,46 @@
+name: pedants
+
+on:
+  push:
+    paths:
+      - '**.php'
+  pull_request:
+    paths:
+      - '**.php'
+
+jobs:
+  build:
+    name: PHP 7.4 on ubuntu-22.04
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 7.4
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Get Composer Cache Directory
+      id: composer-cache-restore
+      run: |
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+    - name: Restore Composer Cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ steps.composer-cache-restore.outputs.dir }}
+        key: ubuntu-22.04-php7.4-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ubuntu-22.04-php7.4-composer-
+
+    - name: Install dependencies
+      run: |
+        composer install --prefer-dist --no-progress --no-suggest
+        composer require --dev friendsofphp/php-cs-fixer phpstan/phpstan:1.11.5
+
+    - name: Run phpstan and php-cs-fixer
+      run: |
+        composer style-check
+        vendor/bin/phpstan analyse
