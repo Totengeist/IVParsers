@@ -50,22 +50,17 @@ class SaveFile extends IVFile {
      *
      * @param string $type the type of ships to retrieve
      *
-     * @return ShipFile[]|array<string, ShipFile[]> the ship files
+     * @return ShipFile[] the ship files
      */
     public function get_ships($type = null) {
-        $ships = array();
-        $layers = $this->get_layers();
-
-        foreach ($layers as $ship) {
-            $ships[$ship->content['Type']][] = $ship;
+        if ($type == null) {
+            return $this->get_layers();
         }
-
-        if ($type !== null) {
-            if (isset($ships[$type])) {
-                return $ships[$type];
+        $ships = array();
+        foreach ($this->get_layers() as $ship) {
+            if ($ship->content['Type'] == $type) {
+                $ships[] = $ship;
             }
-
-            return array();
         }
 
         return $ships;
@@ -128,7 +123,7 @@ class SaveFile extends IVFile {
     }
 
     /**
-     * Debug print fucntion that should be replaced with something more useful.
+     * Debug print function that should be replaced with something more useful.
      *
      * @return void
      */
@@ -140,9 +135,6 @@ class SaveFile extends IVFile {
             $hostiles = count($this->get_ships('HostileShip'));
             $ships = array();
             foreach ($fleet as $ship) {
-                if (is_array($ship)) {
-                    $ship = $ship[count($ship)-1];
-                }
                 $ships[] = $ship->content['Name'];
             }
         } else {

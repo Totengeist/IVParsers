@@ -13,6 +13,12 @@ use Totengeist\IVParser\TheLastStarship\TLSBug;
  */
 class TiddletBug extends TLSBug {
     /**
+     * A name for the bug.
+     *
+     * @var string
+     */
+    protected static $NAME = 'Tiddlet Bug';
+    /**
      * A description of the bug.
      *
      * @var string

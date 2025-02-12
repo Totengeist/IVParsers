@@ -9,11 +9,26 @@ namespace Totengeist\IVParser;
  */
 abstract class Bug {
     /**
+     * A name for the bug.
+     *
+     * @var string
+     */
+    protected static $NAME = 'Untitled';
+    /**
      * A description of the bug.
      *
      * @var string
      */
     protected static $DESCRIPTION = 'No description provided.';
+
+    /**
+     * Retrieve metadata for the bug.
+     *
+     * @return string[]
+     */
+    public static function get_metadata() {
+        return array(static::$NAME, static::$DESCRIPTION);
+    }
 
     /**
      * Check if the current file is affected by this bug.
