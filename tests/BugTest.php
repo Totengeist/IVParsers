@@ -6,7 +6,11 @@ use Totengeist\IVParser\TheLastStarship\Bugs\TiddletBug;
 use Totengeist\IVParser\TheLastStarship\ShipFile;
 
 class BugTest extends TestCase {
-    /** @var string */
+    /**
+     * @var string
+     * 
+     * @SuppressWarnings("php:S1131")
+     */
     public static $EXAMPLE_SHIP = '
 Id                   0  
 Name                 Empty  
@@ -61,6 +65,9 @@ END
 ';
 
     public function testShipTiddletBug() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship1 = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -70,6 +77,9 @@ BEGIN Objects
         Damage               0  
     END
 END';
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship2 = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  

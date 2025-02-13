@@ -5,7 +5,11 @@ namespace Tests;
 use Totengeist\IVParser\TheLastStarship\ShipFile;
 
 class ShipFileTest extends TestCase {
-    /** @var string */
+    /**
+     * @var string
+     *
+     * @SuppressWarnings("php:S1131")
+     */
     public static $EXAMPLE_SHIP = '
 Id                   0  
 Name                 Empty  
@@ -81,6 +85,9 @@ END
     }
 
     public function testCanCreateShipWithObjectsSection() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -106,6 +113,9 @@ END';
     }
 
     public function testDuplicateObjectIdsRetrieveLastObject() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -138,6 +148,9 @@ END';
     }
 
     public function testCanGetItemsByTypeWithString() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -158,6 +171,9 @@ END';
     }
 
     public function testCanGetItemCountsByType() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -192,6 +208,9 @@ END';
     }
 
     public function testCanGetWeapons() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     BEGIN "[i 8]"      
@@ -309,6 +328,9 @@ END';
     }
 
     public function testCanGetEngines() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -326,6 +348,9 @@ END';
     }
 
     public function testCanGetLogistics() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -347,6 +372,9 @@ END';
     }
 
     public function testCanGetThrusters() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -364,6 +392,9 @@ END';
     }
 
     public function testCanGetTankCapacitiesByResource() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  
@@ -414,6 +445,9 @@ END';
     }
 
     public function testCanGetGeneratorCountAndCapacity() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $ship = static::$EXAMPLE_SHIP . '
 BEGIN Objects    
     Size                 1  

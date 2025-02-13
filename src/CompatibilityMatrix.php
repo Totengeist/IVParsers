@@ -28,7 +28,7 @@ class CompatibilityMatrix {
         $initial = json_decode($json, true);
 
         if ($initial == null || !isset($initial['versions'])) {
-            throw new InvalidFileException('Compatibility Matrix');
+            throw new InvalidFileException('compatibility matrix');
         }
 
         $previous = array();

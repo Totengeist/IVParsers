@@ -14,6 +14,7 @@ use Totengeist\IVParser\IVFile;
 class RecipesFile extends IVFile {
     /** @var string[] paths of sections that must exist for it to be a valid file */
     protected static $REQUIRED_SECTIONS = array('Recipe');
+    protected static $FILE_TYPE = 'application/tls-recipes+introversion';
 
     /**
      * An intermediary constructor.

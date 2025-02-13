@@ -12,6 +12,9 @@ class IVFileTest extends TestCase {
     }
 
     public function testCanCreateFullIVFile() {
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
         $file = new IVFile('
 Id                   0  
 Name                 Empty  

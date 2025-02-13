@@ -469,7 +469,7 @@ class IVFile extends Section {
             $class = str_replace('.php', '', $class);
             $class = '\\Totengeist\\IVParser\\' . str_replace('/', '\\', $class);
             if (!class_exists($class)) {
-                include $file;
+                include_once $file;
             }
             try {
                 $iv_file = new $class($file);
