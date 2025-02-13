@@ -55,12 +55,12 @@ class SectionTest extends TestCase {
 
         $this->assertEquals(count($section->sections), 2);
         $this->assertEquals(array(
-                                $section->sections['Section1']->content,
-                                $section->sections['Section2']->content,
-                            ), array(
-                                array('Key1' => 'Value1', 'Key2' => 'Value 2'),
-                                array('Key3' => 'Value3', 'Key2' => 'Value 2'),
-                            ));
+            $section->sections['Section1']->content,
+            $section->sections['Section2']->content,
+        ), array(
+            array('Key1' => 'Value1', 'Key2' => 'Value 2'),
+            array('Key3' => 'Value3', 'Key2' => 'Value 2'),
+        ));
     }
 
     public function testCanAddEmptySubSection() {
@@ -78,20 +78,20 @@ class SectionTest extends TestCase {
     public function testCanAddArraySubSection() {
         $section = new Section('', array('BEGIN "[i 1]"    Key1 Value1    Key2 "Value 2"  END', 'BEGIN "[i 3]"    Key1 Value1    Key2 "Value 2"  END'));
         $this->assertEquals(array(
-                                $section->sections[1]->content,
-                                $section->sections[3]->content,
-                            ), array(
-                                array('Key1' => 'Value1', 'Key2' => 'Value 2'),
-                                array('Key1' => 'Value1', 'Key2' => 'Value 2'),
-                            ));
+            $section->sections[1]->content,
+            $section->sections[3]->content,
+        ), array(
+            array('Key1' => 'Value1', 'Key2' => 'Value 2'),
+            array('Key1' => 'Value1', 'Key2' => 'Value 2'),
+        ));
         $section = new Section('', array('BEGIN "[i 1]"', '    Key1 Value1', '    Key2 "Value 2"  ', 'END', 'BEGIN "[i 3]"', '    Key1 Value1', '    Key2 "Value 2"  ', 'END'));
         $this->assertEquals(array(
-                                $section->sections[1]->content,
-                                $section->sections[3]->content,
-                            ), array(
-                                array('Key1' => 'Value1', 'Key2' => 'Value 2'),
-                                array('Key1' => 'Value1', 'Key2' => 'Value 2'),
-                            ));
+            $section->sections[1]->content,
+            $section->sections[3]->content,
+        ), array(
+            array('Key1' => 'Value1', 'Key2' => 'Value 2'),
+            array('Key1' => 'Value1', 'Key2' => 'Value 2'),
+        ));
     }
 
     public function testCanAddSubfile() {

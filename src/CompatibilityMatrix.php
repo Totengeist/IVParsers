@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base class for verifying compatibility with various versions of the game.
  */

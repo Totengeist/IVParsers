@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Classes necessary for processing a spritebank.txt file.
  */

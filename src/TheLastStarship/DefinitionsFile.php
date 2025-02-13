@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Classes necessary for processing a definitions.txt file.
  */
