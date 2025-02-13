@@ -64,52 +64,19 @@ class Section {
             if (trim($line) == '') {
                 continue;
             }
-            $pretext = str_repeat('    ', $level); // deal with any indentation of the text
+            $pretext = $this->indent($level, ''); // deal with any indentation of the text
             if ($start == -1) {
                 if (strpos($line, $pretext . 'BEGIN') === 0) {
                     if (strpos($line, 'END') === (strlen(rtrim($line))-3)) {
-                        // section ends in the same line
-                        preg_match('/^ *BEGIN ([^ "]*|"[^"]*")(?: +(.*))? +END *$/i', $line, $matches);
-                        if (count($matches) == 0) {
-                            // @codeCoverageIgnoreStart
-                            throw new \ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
-                            // @codeCoverageIgnoreEnd
-                        }
-                        $section_title = trim($matches[1]);
-                        preg_match("/^\"\[i ([0-9]+)\]\"$/i", $section_title, $title_check);
-                        if ($title_check) {
-                            $this->array = true;
-                            $section_title = (int) $title_check[1];
-                        }
-                        if (!isset($matches[2])) {
-                            $section_content = '';
-                        } else {
-                            $section_content = trim($matches[2]);
-                        }
-                        if ($section_content == '') {
-                            $this->add_section($section_title, new Section($this->path . '/' . $section_title, array()));
-                        } else {
-                            preg_match_all('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/i', $section_content, $content_check);
-                            $this->add_section($section_title, new Section($this->path . '/' . $section_title, $content_check[0]));
-                        }
+                        $this->process_singleline_section($line);
                     } else {
                         // section continues
-                        preg_match('/^ *BEGIN ([^ "]*|"[^"]*") *$/i', $line, $matches);
-                        $key = trim($matches[1]);
-                        preg_match("/^\"\[i ([0-9]+)\]\"$/i", $key, $title_check);
-                        if ($title_check) {
-                            $this->array = true;
-                            $key = (int) $title_check[1];
-                        }
+                        $matches = $this->match_or_exception('/^ *BEGIN ([^ "]*|"[^"]*") *$/i', $line);
+                        $key = $this->array_check($matches[1]);
                         $start = $i+1;
                     }
                 } else {
-                    preg_match('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/', trim($line), $matches);
-                    if (count($matches) == 0) {
-                        // @codeCoverageIgnoreStart
-                        throw new \ErrorException('Something unexpected happened. This file either contains new structures or is faulty.', 0, E_ERROR, __FILE__, __LINE__);
-                        // @codeCoverageIgnoreEnd
-                    }
+                    $matches = $this->match_or_exception('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/', trim($line));
                     $content[trim($matches['name'])] = trim(trim($matches['value']), '"');
                 }
             } else {
@@ -121,6 +88,43 @@ class Section {
             }
         }
         $this->content = $content;
+    }
+
+    /**
+     * Check whether the section is an array.
+     *
+     * @param string $title
+     *
+     * @return int|string
+     */
+    public function array_check($title) {
+        $title = trim($title);
+        preg_match("/^\"\[i (\d+)\]\"$/i", $title, $title_check);
+        if ($title_check) {
+            $this->array = true;
+            $title = (int) $title_check[1];
+        }
+
+        return $title;
+    }
+
+    /**
+     * Throw an exception when a preg_match doesn't match.
+     *
+     * @param string $regex
+     * @param string $line
+     *
+     * @return string[]
+     */
+    public function match_or_exception($regex, $line) {
+        preg_match($regex, $line, $matches);
+        if (empty($matches)) {
+            // @codeCoverageIgnoreStart
+            throw new InvalidFileException();
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $matches;
     }
 
     /**
@@ -164,6 +168,25 @@ class Section {
             }
         } else {
             $this->sections[$key] = $object;
+        }
+    }
+
+    /**
+     * Process a single-line section.
+     *
+     * @param string $line the line to create a section from
+     *
+     * @return void
+     */
+    public function process_singleline_section($line) {
+        $matches = $this->match_or_exception('/^ *BEGIN ([^ "]*|"[^"]*")(?: +(.*))? +END *$/i', $line);
+        $section_title = $this->array_check($matches[1]);
+        $section_content = isset($matches[2]) ? trim($matches[2]) : '';
+        if ($section_content == '') {
+            $this->add_section($section_title, new Section($this->path . '/' . $section_title, array()));
+        } else {
+            preg_match_all('/((?<name>[^ "]+|"[^"]+") +(?<value>[^ "]+|"[^"]+"))/i', $section_content, $content_check);
+            $this->add_section($section_title, new Section($this->path . '/' . $section_title, $content_check[0]));
         }
     }
 
@@ -283,37 +306,29 @@ class Section {
         if ($level !== -1) {
             if ($in_array) {
                 $path = "\"[i $path]\" ";
-                $string = str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width+2) . ' ';
+                $string = $this->indent($level, 'BEGIN ' . str_pad($path, 10*$col_width+2) . ' ');
             } else {
-                $string = str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width) . ' ';
+                $string = $this->indent($level, 'BEGIN ' . str_pad($path, 10*$col_width) . ' ');
             }
-            $end = str_repeat('    ', $level) . "END\n";
+            $end = $this->indent($level, "END\n");
         }
 
         if ($this->sections === array() && $this->content === array()) {
             if ($in_array) {
-                return str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width+2) . " END\n";
+                return $this->indent($level, 'BEGIN ' . str_pad($path, 10*$col_width+2) . " END\n");
             }
 
-            return str_repeat('    ', $level) . 'BEGIN ' . str_pad($path, 10*$col_width) . " END\n";
+            return $this->indent($level, 'BEGIN ' . str_pad($path, 10*$col_width) . " END\n");
         }
 
         if (count($this->sections) == 0 && count($this->content) < 11) {
             $end = "END\n";
             foreach ($this->content as $key => $content) {
-                if (strpos($content, ' ') !== false) {
-                    $string .= "$key \"$content\"  ";
-                } else {
-                    $string .= "$key $content  ";
-                }
+                $string .= "$key " . $this->quote($content) . '  ';
             }
         } else {
             foreach ($this->content as $key => $content) {
-                if (strpos($content, ' ') !== false) {
-                    $string .= "\n" . str_repeat('    ', $level + 1) . str_pad($key, 10*$content_key_length) . " \"$content\"  ";
-                } else {
-                    $string .= "\n" . str_repeat('    ', $level + 1) . str_pad($key, 10*$content_key_length) . " $content  ";
-                }
+                $string .= "\n" . $this->indent($level + 1, str_pad($key, 10*$content_key_length) . ' ' . $this->quote($content) . '  ');
             }
             $string .= "\n";
             foreach ($this->sections as $key => $section) {
@@ -326,9 +341,35 @@ class Section {
                 }
             }
         }
-        $string .= $end;
 
-        return $string;
+        return $string . $end;
+    }
+
+    /**
+     * Indent a string.
+     *
+     * @param int    $indent the indentation level
+     * @param string $line   the string to indent
+     *
+     * @return string
+     */
+    public function indent($indent, $line) {
+        return str_repeat('    ', $indent) . $line;
+    }
+
+    /**
+     * Quote a string depending on if it has spaces.
+     *
+     * @param string $line the string to quote
+     *
+     * @return string
+     */
+    public function quote($line) {
+        if (strpos($line, ' ') !== false) {
+            return '"' . $line . '"';
+        }
+
+        return $line;
     }
 
     /**
@@ -338,148 +379,5 @@ class Section {
      */
     public function __toString() {
         return $this->toString();
-    }
-}
-
-/**
- * The implementation of a standard Introversion configuration file.
- *
- * The IVFile class does some standard handling of user/file inputs to avoid repeating this for every
- * subsection.
- */
-class IVFile extends Section {
-    /** @var string[] paths of sections that must exist for it to be a valid file */
-    protected static $REQUIRED_SECTIONS = array();
-    /** @var string[] content items that must exist for it to be a valid file */
-    protected static $REQUIRED_CONTENT = array();
-    /** @var string the file type identifier */
-    protected static $FILE_TYPE = 'application/introversion';
-
-    /**
-     * An intermediary constructor.
-     *
-     * The constructor for an IVFile handles parsing of data sent directory form a file (i.e. a
-     * string) whereas a Section requires an array. The usual constructor is then called on that
-     * data.
-     *
-     * @param string|string[] $structure the structure of the section and its subsections
-     * @param int             $level     the indentation level of the section in the original file
-     * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
-     */
-    public function __construct($structure = array(), $level = 0, $subfiles = array()) {
-        parent::__construct('', self::prepare_structure($structure), $level, $subfiles);
-    }
-
-    /**
-     * An intermediary constructor.
-     *
-     * The constructor for an IVFile handles parsing of data sent directly from a file (i.e. a
-     * string) whereas a Section requires an array. The usual constructor is then called on that
-     * data.
-     *
-     * @param string|string[] $structure the structure of the section and its subsections
-     *
-     * @return string[] a cleaned structure
-     */
-    public static function prepare_structure($structure) {
-        if (is_string($structure)) {
-            $result = preg_split('/\r?\n/', $structure);
-            $structure = ($result === false) ? array($structure) : $result;
-        }
-
-        return $structure;
-    }
-
-    /**
-     * Verify the given structure is a save file.
-     *
-     * We check for sections and content required in the given file.
-     *
-     * @return bool is it a valid file?
-     */
-    public function is_valid() {
-        foreach (static::$REQUIRED_CONTENT as $content) {
-            if (!isset($this->content[$content])) {
-                return false;
-            }
-        }
-        foreach (static::$REQUIRED_SECTIONS as $section) {
-            if (!$this->section_exists($section)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Verify the given structure is valid.
-     *
-     * We check to make sure the file can be parsed, regardless of required content or sections.
-     *
-     * @param string|string[] $structure the structure of the section and its subsections
-     * @param int             $level     the indentation level of the section in the original file
-     * @param string[]|null   $subfiles  an array of IVFile-inheriting classes and their paths
-     *
-     * @return bool is it a valid file structure?
-     */
-    public static function is_valid_structure($structure, $level = 0, $subfiles = null) {
-        try {
-            $class = get_called_class();
-            if ($subfiles === null) {
-                $file = new $class($structure, $level);
-            } else {
-                $file = new $class($structure, $level, $subfiles);
-            }
-        } catch (InvalidFileException $ex) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get an identifier for which IVFile variant we're using.
-     *
-     * @return string the file type
-     */
-    public function file_type() {
-        return static::$FILE_TYPE;
-    }
-
-    /**
-     * Check if the file is a valid Introversion file, then find if it's a supported type.
-     *
-     * @param string $file the file to check
-     *
-     * @return string|false the file type or false
-     */
-    public static function check_file_type($file) {
-        try {
-            new IVFile($file);
-        } catch (InvalidFileException $e) {
-            return false;
-        }
-        $files = glob(__DIR__ . '/../src/**/*File.php');
-        if ($files === false) {
-            return false;
-        }
-        foreach ($files as $class_file) {
-            $class = str_replace(__DIR__ . '/../src/', '', $class_file);
-            $class = str_replace('.php', '', $class);
-            $class = '\\Totengeist\\IVParser\\' . str_replace('/', '\\', $class);
-            if (!class_exists($class)) {
-                include_once $file;
-            }
-            try {
-                $iv_file = new $class($file);
-            } catch (InvalidFileException $e) {
-                continue;
-            }
-
-            return $iv_file->file_type(); /* @phpstan-ignore-line */
-        }
-
-        return static::$FILE_TYPE;
     }
 }

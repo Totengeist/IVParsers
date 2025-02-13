@@ -8,7 +8,7 @@ use Totengeist\IVParser\TheLastStarship\ShipFile;
 class BugTest extends TestCase {
     /**
      * @var string
-     * 
+     *
      * @SuppressWarnings("php:S1131")
      */
     public static $EXAMPLE_SHIP = '

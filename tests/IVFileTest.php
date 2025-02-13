@@ -9,6 +9,7 @@ class IVFileTest extends TestCase {
         $file = new IVFile();
 
         $this->assertEquals(get_class($file), "Totengeist\IVParser\IVFile");
+        $this->assertEquals($file->file_type(), 'application/introversion');
     }
 
     public function testCanCreateFullIVFile() {
@@ -49,6 +50,7 @@ END
         $this->assertEquals(get_class($file), "Totengeist\IVParser\IVFile");
         $this->assertTrue($file->section_exists('Deliveries'));
         $this->assertEquals($file->get_section('Deliveries')->content['Timer'], '0.055459458380937576');
+        $this->assertEquals(IVFile::check_file_type($file->toString()), 'application/tls-ship+introversion');
     }
 
     public function testStructureIsValid() {

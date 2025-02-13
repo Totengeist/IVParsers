@@ -80,10 +80,8 @@ class TiddletBug extends TLSBug {
                 if (is_array($object)) {
                     $object = $object[count($object)-1];
                 }
-                if ($object->content['Type'] == 'Tiddlet') {
-                    if (isset($object->content['Damage'])) {
-                        $object->content['Damage'] = '0';
-                    }
+                if ($object->content['Type'] == 'Tiddlet' && isset($object->content['Damage'])) {
+                    $object->content['Damage'] = '0';
                 }
             }
         } elseif (get_class($file) == "Totengeist\IVParser\TheLastStarship\SaveFile") {

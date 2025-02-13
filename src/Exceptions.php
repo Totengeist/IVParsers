@@ -21,7 +21,7 @@ class InvalidFileException extends \Exception {
     /**
      * @param string $file_type the type of file that was to be loaded
      */
-    public function __construct($file_type = '') {
+    public function __construct($file_type = 'Introversion') {
         parent::__construct("This is not a valid $file_type file.");
     }
 }
