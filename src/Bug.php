@@ -26,7 +26,7 @@ abstract class Bug {
      *
      * @return string[]
      */
-    public static function get_metadata() {
+    public static function getMetadata() {
         return array(static::$NAME, static::$DESCRIPTION);
     }
 

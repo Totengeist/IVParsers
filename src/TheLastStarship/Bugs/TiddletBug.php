@@ -38,30 +38,20 @@ class TiddletBug extends TLSBug {
      */
     public static function hasBug($file) {
         if (get_class($file) == "Totengeist\IVParser\TheLastStarship\ShipFile") {
-            $tiddlets = $file->get_object_content('Tiddlet', 'Damage');
-            if (count($tiddlets) == 0) {
-                return false;
-            }
+            $tiddlets = $file->getObjectContent('Tiddlet', 'Damage');
             foreach ($tiddlets as $tiddlet) {
                 if (((float) $tiddlet) > 0.0) {
                     return true;
                 }
             }
-
-            return false;
         } elseif (get_class($file) == "Totengeist\IVParser\TheLastStarship\SaveFile") {
             /** @var ShipFile[] $ships */
-            $ships = $file->get_ships('FriendlyShip');
-            if (count($ships) == 0) {
-                return false;
-            }
+            $ships = $file->getShips('FriendlyShip');
             foreach ($ships as $ship) {
                 if (static::hasBug($ship)) {
                     return true;
                 }
             }
-
-            return false;
         }
 
         return false;
@@ -76,7 +66,7 @@ class TiddletBug extends TLSBug {
      */
     public static function resolveBug(&$file) {
         if (get_class($file) == "Totengeist\IVParser\TheLastStarship\ShipFile") {
-            foreach ($file->get_unique_section('Objects')->sections as $object) {
+            foreach ($file->getUniqueSection('Objects')->sections as $object) {
                 if (is_array($object)) {
                     $object = $object[count($object)-1];
                 }
@@ -85,7 +75,7 @@ class TiddletBug extends TLSBug {
                 }
             }
         } elseif (get_class($file) == "Totengeist\IVParser\TheLastStarship\SaveFile") {
-            $ships = $file->get_ships('FriendlyShip');
+            $ships = $file->getShips('FriendlyShip');
             if (count($ships) == 0) {
                 return true;
             }

@@ -9,7 +9,7 @@ class IVFileTest extends TestCase {
         $file = new IVFile();
 
         $this->assertEquals(get_class($file), "Totengeist\IVParser\IVFile");
-        $this->assertEquals($file->file_type(), 'application/introversion');
+        $this->assertEquals($file->fileType(), 'application/introversion');
     }
 
     public function testCanCreateFullIVFile() {
@@ -48,20 +48,20 @@ END
 ');
 
         $this->assertEquals(get_class($file), "Totengeist\IVParser\IVFile");
-        $this->assertTrue($file->section_exists('Deliveries'));
-        $this->assertEquals($file->get_section('Deliveries')->content['Timer'], '0.055459458380937576');
-        $this->assertEquals(IVFile::check_file_type($file->toString()), 'application/tls-ship+introversion');
+        $this->assertTrue($file->sectionExists('Deliveries'));
+        $this->assertEquals($file->getSection('Deliveries')->content['Timer'], '0.055459458380937576');
+        $this->assertEquals(IVFile::checkFileType($file->toString()), 'application/tls-ship+introversion');
     }
 
     public function testStructureIsValid() {
         $section = new TestIVFile(array('Key1 Value1', 'BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'));
-        $this->assertTrue($section->is_valid());
+        $this->assertTrue($section->isValid());
 
         $section = new TestIVFile(array('BEGIN TestSection', '    Key1 Value1', '    Key2 Value 2', 'END'));
-        $this->assertFalse($section->is_valid());
+        $this->assertFalse($section->isValid());
 
         $section = new TestIVFile(array('Key1 Value1'));
-        $this->assertFalse($section->is_valid());
+        $this->assertFalse($section->isValid());
     }
 }
 

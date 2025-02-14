@@ -29,7 +29,7 @@ class SpritebankFile extends IVFile {
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array('/Sprite' => 'Totengeist\IVParser\TheLastStarship\Sprite')) {
         parent::__construct($structure, $level, $subfiles);
-        if (!$this->is_valid() && $structure !== array()) {
+        if (!$this->isValid() && $structure !== array()) {
             throw new InvalidFileException('spritebank');
         }
     }
@@ -41,8 +41,8 @@ class SpritebankFile extends IVFile {
      *
      * @return Sprite|null the sprite
      */
-    public function get_sprite($item) {
-        foreach ($this->get_sprites() as $sprite) {
+    public function getSprite($item) {
+        foreach ($this->getSprites() as $sprite) {
             if ($sprite->content['Name'] == $item) {
                 return $sprite;
             }
@@ -56,9 +56,9 @@ class SpritebankFile extends IVFile {
      *
      * @return Sprite[] all sprites
      */
-    public function get_sprites() {
+    public function getSprites() {
         /** @var Sprite[] $sprites */
-        $sprites = $this->get_repeatable_section('Sprite');
+        $sprites = $this->getRepeatableSection('Sprite');
 
         return $sprites;
     }
@@ -87,9 +87,9 @@ class Sprite extends Section {
      *
      * @return array<array<string, int>> the sprite dimensions
      */
-    public function get_metadata() {
+    public function getMetadata() {
         $metadata = array();
-        $frames = $this->get_unique_section('Frames');
+        $frames = $this->getUniqueSection('Frames');
         foreach ($frames->sections as $key => $frame) {
             if (is_array($frame) || $frame->content == array()) {
                 continue;

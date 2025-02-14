@@ -29,7 +29,7 @@ class DefinitionsFile extends IVFile {
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array('/Definition' => 'Totengeist\IVParser\TheLastStarship\Definition')) {
         parent::__construct($structure, $level, $subfiles);
-        if (!$this->is_valid() && $structure !== array()) {
+        if (!$this->isValid() && $structure !== array()) {
             throw new InvalidFileException('definitions');
         }
     }
@@ -41,8 +41,8 @@ class DefinitionsFile extends IVFile {
      *
      * @return Definition|null the definition
      */
-    public function get_definition($type) {
-        foreach ($this->get_definitions() as $definition) {
+    public function getDefinition($type) {
+        foreach ($this->getDefinitions() as $definition) {
             if ($definition->content['Type'] == $type) {
                 return $definition;
             }
@@ -56,9 +56,9 @@ class DefinitionsFile extends IVFile {
      *
      * @return Definition[] the definitions
      */
-    public function get_definitions() {
+    public function getDefinitions() {
         /** @var Definition[] $definitions */
-        $definitions = $this->get_repeatable_section('Definition');
+        $definitions = $this->getRepeatableSection('Definition');
 
         return $definitions;
     }
@@ -87,8 +87,8 @@ class Definition extends Section {
      *
      * @return string[] the metadata
      */
-    public function get_metadata() {
-        return $this->get_unique_section('Equipment')->content;
+    public function getMetadata() {
+        return $this->getUniqueSection('Equipment')->content;
     }
 
     /**
@@ -96,8 +96,8 @@ class Definition extends Section {
      *
      * @return Section[] the ports
      */
-    public function get_ports() {
-        return $this->get_repeatable_section('Port');
+    public function getPorts() {
+        return $this->getRepeatableSection('Port');
     }
 
     /**
@@ -105,8 +105,8 @@ class Definition extends Section {
      *
      * @return Section[] the slots
      */
-    public function get_slots() {
-        return $this->get_repeatable_section('Slot');
+    public function getSlots() {
+        return $this->getRepeatableSection('Slot');
     }
 
     /**
@@ -114,7 +114,7 @@ class Definition extends Section {
      *
      * @return Section[] the placement rules
      */
-    public function get_placement_rules() {
-        return $this->get_repeatable_section('PlacementRule');
+    public function getPlacementRules() {
+        return $this->getRepeatableSection('PlacementRule');
     }
 }

@@ -42,7 +42,7 @@ class ShipFile extends IVFile {
     /** @var string[] */
     public static $TANKS = array('TinyTank', 'SmallTank', 'Tank');
     /** @var string[] */
-    public static $RESOURCES = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium');
+    public static $RESOURCES = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium', 'MetreonGas', 'RefinedMetreon', 'HyperspaceIsotopes', 'StableIsotopes');
 
     /**
      * An intermediary constructor.
@@ -55,7 +55,7 @@ class ShipFile extends IVFile {
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array()) {
         parent::__construct($structure, $level, $subfiles);
-        if (!$this->is_valid() && $structure !== array()) {
+        if (!$this->isValid() && $structure !== array()) {
             throw new InvalidFileException('ship');
         }
     }
@@ -65,14 +65,14 @@ class ShipFile extends IVFile {
      *
      * @return float[] an associative array of resource capacities
      */
-    public function get_tank_capacity_by_type() {
+    public function getTankCapacityByType() {
         $tanks = array();
 
         foreach (static::$RESOURCES as $resource) {
             $tanks[$resource] = 0.0;
         }
 
-        foreach ($this->get_tanks() as $tank_type) {
+        foreach ($this->getTanks() as $tank_type) {
             foreach ($tank_type as $tank) {
                 if (isset($tank['Resource']) && isset($tank['Capacity'])) {
                     $tanks[$tank['Resource']] += (float) $tank['Capacity'];
@@ -88,10 +88,10 @@ class ShipFile extends IVFile {
      *
      * @return array{float, array<string, int>}
      */
-    public function get_generator_count_and_output() {
+    public function getGeneratorCountAndOutput() {
         $output = 0;
         $count = array();
-        foreach ($this->get_generators() as $type => $generators) {
+        foreach ($this->getGenerators() as $type => $generators) {
             $count[$type] = count($generators);
             foreach ($generators as $power) {
                 $output += (float) $power['PowerOutput'];
@@ -108,14 +108,14 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]>> the items, grouped by type
      */
-    public function get_items_by_type($type) {
+    public function getItemsByType($type) {
         if (is_string($type)) {
             $type = array($type);
         }
         $items = array();
 
         foreach ($type as $item) {
-            $results = $this->get_object_content($item);
+            $results = $this->getObjectContent($item);
             if ($results !== array()) {
                 $items[$item] = $results;
             }
@@ -129,8 +129,8 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]>> weapons, grouped by type
      */
-    public function get_weapons() {
-        return $this->get_items_by_type(static::$WEAPONS);
+    public function getWeapons() {
+        return $this->getItemsByType(static::$WEAPONS);
     }
 
     /**
@@ -138,8 +138,8 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]>> engines, grouped by type
      */
-    public function get_engines() {
-        return $this->get_items_by_type(static::$ENGINES);
+    public function getEngines() {
+        return $this->getItemsByType(static::$ENGINES);
     }
 
     /**
@@ -147,8 +147,8 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]>> logistics equipment, grouped by type
      */
-    public function get_logistics() {
-        return $this->get_items_by_type(static::$LOGISTICS);
+    public function getLogistics() {
+        return $this->getItemsByType(static::$LOGISTICS);
     }
 
     /**
@@ -156,8 +156,8 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]>> generators, grouped by type
      */
-    public function get_generators() {
-        return $this->get_items_by_type(static::$POWER);
+    public function getGenerators() {
+        return $this->getItemsByType(static::$POWER);
     }
 
     /**
@@ -165,8 +165,8 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]>> thrusters, grouped by type
      */
-    public function get_thrusters() {
-        return $this->get_items_by_type(static::$THRUSTERS);
+    public function getThrusters() {
+        return $this->getItemsByType(static::$THRUSTERS);
     }
 
     /**
@@ -174,8 +174,8 @@ class ShipFile extends IVFile {
      *
      * @return array<string, array<string[]>> tanks, grouped by type
      */
-    public function get_tanks() {
-        return $this->get_items_by_type(static::$TANKS);
+    public function getTanks() {
+        return $this->getItemsByType(static::$TANKS);
     }
 
     /**
@@ -185,14 +185,14 @@ class ShipFile extends IVFile {
      *
      * @return int[] the item counts, grouped by type
      */
-    public function get_item_counts_by_type($type) {
+    public function getItemCountsByType($type) {
         $counts = array();
 
         foreach ($type as $key) {
             $counts[$key] = 0;
         }
 
-        foreach ($this->get_items_by_type($type) as $key => $content) {
+        foreach ($this->getItemsByType($type) as $key => $content) {
             $counts[$key] = count($content);
         }
 
@@ -207,10 +207,10 @@ class ShipFile extends IVFile {
      *
      * @return int[] the cell counts by type
      */
-    public function get_cell_info() {
+    public function getCellInfo() {
         $types = array();
         $cells = array();
-        foreach ($this->get_unique_section('GridMap/Palette')->sections as $cell) {
+        foreach ($this->getUniqueSection('GridMap/Palette')->sections as $cell) {
             if (is_array($cell)) {
                 $cell = end($cell);
             }
@@ -240,7 +240,7 @@ class ShipFile extends IVFile {
         $typekeys = array_keys($types);
         $cell_width = strlen($typekeys[count($typekeys)-1])+1;
 
-        foreach ($this->get_unique_section('GridMap/Cells')->content as $cellk => $cell) {
+        foreach ($this->getUniqueSection('GridMap/Cells')->content as $cellk => $cell) {
             for ($i = 0; $i < strlen($cell); $i += $cell_width) {
                 $char = trim(substr($cell, $i, $cell_width));
                 if (in_array($char, array_keys($types))) {
@@ -268,12 +268,12 @@ class ShipFile extends IVFile {
      *
      * @return int the number of objects of the given type
      */
-    public function get_object_count($label) {
-        if (!$this->section_exists('Objects')) {
+    public function getObjectCount($label) {
+        if (!$this->sectionExists('Objects')) {
             return 0;
         }
 
-        return count($this->get_object_content($label));
+        return count($this->getObjectContent($label));
     }
 
     /**
@@ -284,12 +284,12 @@ class ShipFile extends IVFile {
      *
      * @return ($item is null ? array<string[]> : array<string>) the content information
      */
-    public function get_object_content($label, $item = null) {
-        if (!$this->section_exists('Objects')) {
+    public function getObjectContent($label, $item = null) {
+        if (!$this->sectionExists('Objects')) {
             return array();
         }
         $content = array();
-        foreach ($this->get_unique_section('Objects')->sections as $object) {
+        foreach ($this->getUniqueSection('Objects')->sections as $object) {
             if (is_array($object)) {
                 $object = $object[count($object)-1];
             }
@@ -307,5 +307,21 @@ class ShipFile extends IVFile {
         }
 
         return $content;
+    }
+
+    /**
+     * Get the ship file's save version number.
+     *
+     * Save files during the playtest did not have version number, so we return 0 if no version is
+     * found.
+     *
+     * @return int the version of the ship file
+     */
+    public function getSaveVersion() {
+        if (isset($this->content['SaveVersion'])) {
+            return intval($this->content['SaveVersion']);
+        }
+
+        return 0;
     }
 }

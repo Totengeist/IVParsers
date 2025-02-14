@@ -20,7 +20,7 @@ abstract class BugManager {
      *
      * @return string[] an array of bug names
      */
-    public static function get_bugs_from_game($game) {
+    public static function getBugsFromGame($game) {
         $game = 'Totengeist\IVParser\\' . $game;
         $bugs = array();
         foreach (static::$BUGS as $bug) {

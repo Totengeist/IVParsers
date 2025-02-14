@@ -28,7 +28,7 @@ class RecipesFile extends IVFile {
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array()) {
         parent::__construct($structure, $level, $subfiles);
-        if (!$this->is_valid() && $structure !== array()) {
+        if (!$this->isValid() && $structure !== array()) {
             throw new InvalidFileException('recipes');
         }
     }
@@ -40,9 +40,9 @@ class RecipesFile extends IVFile {
      *
      * @return \Totengeist\IVParser\Section[] the definition section
      */
-    public function get_recipes_by_equipment($equipment) {
+    public function getRecipesByEquipment($equipment) {
         $recipes = array();
-        foreach ($this->get_repeatable_section('Recipe') as $recipe) {
+        foreach ($this->getRepeatableSection('Recipe') as $recipe) {
             if (!isset($recipe->content['Equipment'])) {
                 if ($recipe->content['Type'] == $equipment) {
                     $recipes[] = $recipe;
@@ -62,7 +62,7 @@ class RecipesFile extends IVFile {
      *
      * @return \Totengeist\IVParser\Section[] the recipes
      */
-    public function get_recipes() {
-        return $this->get_repeatable_section('Recipe');
+    public function getRecipes() {
+        return $this->getRepeatableSection('Recipe');
     }
 }

@@ -5,6 +5,8 @@ namespace Tests;
 use Totengeist\IVParser\TheLastStarship\ShipFile;
 
 class ShipFileTest extends TestCase {
+    /** @var string */
+    public static $FILE_CLASS = "Totengeist\IVParser\TheLastStarship\ShipFile";
     /**
      * @var string
      *
@@ -65,23 +67,23 @@ END
 
     public function testCanCreateEmptyShipFile() {
         $file = new ShipFile();
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
     }
 
     public function testCanCheckValidShipStructure() {
-        $this->assertTrue(ShipFile::is_valid_structure(static::$EXAMPLE_SHIP));
+        $this->assertTrue(ShipFile::isValidStructure(static::$EXAMPLE_SHIP));
     }
 
     public function testCanCheckInvalidShipStructure() {
         $ship = str_replace('BEGIN Habitation SewageTimer 0.068042416666656891  END', '', static::$EXAMPLE_SHIP);
-        $this->assertFalse(ShipFile::is_valid_structure($ship));
+        $this->assertFalse(ShipFile::isValidStructure($ship));
     }
 
     public function testCanCreateFullShipFile() {
         $file = new ShipFile(static::$EXAMPLE_SHIP);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Deliveries'));
-        $this->assertEquals($file->get_section('Deliveries')->content['Timer'], '0.055459458380937576');
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Deliveries'));
+        $this->assertEquals($file->getSection('Deliveries')->content['Timer'], '0.055459458380937576');
     }
 
     public function testCanCreateShipWithObjectsSection() {
@@ -105,11 +107,11 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_object_count('DockingPort'), 1);
-        $this->assertEquals($file->get_object_content('DockingPort'), array(array('Id' => '9', 'Type' => 'DockingPort')));
-        $this->assertEquals($file->get_object_content('DockingPort', 'Id'), array('9'));
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getObjectCount('DockingPort'), 1);
+        $this->assertEquals($file->getObjectContent('DockingPort'), array(array('Id' => '9', 'Type' => 'DockingPort')));
+        $this->assertEquals($file->getObjectContent('DockingPort', 'Id'), array('9'));
     }
 
     public function testDuplicateObjectIdsRetrieveLastObject() {
@@ -130,21 +132,21 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_object_count('GatlingGun'), 0);
-        $this->assertEquals($file->get_object_count('DockingPort'), 1);
-        $this->assertEquals($file->get_object_content('DockingPort'), array(array('Id' => '9', 'Type' => 'DockingPort')));
-        $this->assertEquals($file->get_object_content('DockingPort', 'Id'), array('9'));
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getObjectCount('GatlingGun'), 0);
+        $this->assertEquals($file->getObjectCount('DockingPort'), 1);
+        $this->assertEquals($file->getObjectContent('DockingPort'), array(array('Id' => '9', 'Type' => 'DockingPort')));
+        $this->assertEquals($file->getObjectContent('DockingPort', 'Id'), array('9'));
     }
 
     public function testCanQueryObjectsOnShipWithoutObjectsSection() {
         $file = new ShipFile(static::$EXAMPLE_SHIP);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertFalse($file->section_exists('Objects'));
-        $this->assertEquals($file->get_object_count('NotExistGun'), 0);
-        $this->assertEquals($file->get_object_content('NotExistGun'), array());
-        $this->assertEquals(count($file->get_weapons()), 0);
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertFalse($file->sectionExists('Objects'));
+        $this->assertEquals($file->getObjectCount('NotExistGun'), 0);
+        $this->assertEquals($file->getObjectContent('NotExistGun'), array());
+        $this->assertEquals(count($file->getWeapons()), 0);
     }
 
     public function testCanGetItemsByTypeWithString() {
@@ -163,9 +165,9 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_items_by_type('TinyTank'), array(
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getItemsByType('TinyTank'), array(
             'TinyTank' => array(array('Type'=>'TinyTank')),
         ));
     }
@@ -198,9 +200,9 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_item_counts_by_type(array('TinyTank', 'SmallTank', 'Tank')), array(
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getItemCountsByType(array('TinyTank', 'SmallTank', 'Tank')), array(
             'TinyTank' => 2,
             'SmallTank' => 3,
             'Tank' => 1,
@@ -306,12 +308,12 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_object_count('GatlingGun'), 2);
-        $this->assertEquals($file->get_object_count('NotExistGun'), 0);
-        $this->assertEquals($file->get_object_content('NotExistGun'), array());
-        $this->assertEquals($file->get_object_content('Railgun'), array(array(
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getObjectCount('GatlingGun'), 2);
+        $this->assertEquals($file->getObjectCount('NotExistGun'), 0);
+        $this->assertEquals($file->getObjectContent('NotExistGun'), array());
+        $this->assertEquals($file->getObjectContent('Railgun'), array(array(
             'Id' => '22086',
             'Type' => 'Railgun',
             'Position.x' => '17.00000',
@@ -324,7 +326,7 @@ END';
             'Orientation' => 'Right',
             'Job' => '242',
         )));
-        $this->assertEquals(count($file->get_weapons()), 3);
+        $this->assertEquals(count($file->getWeapons()), 3);
     }
 
     public function testCanGetEngines() {
@@ -340,9 +342,9 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_engines(), array(
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getEngines(), array(
             'Engine' => array(array('Type'=>'Engine')),
         ));
     }
@@ -363,9 +365,9 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_logistics(), array(
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getLogistics(), array(
             'DroneBay' => array(array('Type'=>'DroneBay')),
             'MiningLaser' => array(array('Type'=>'MiningLaser')),
         ));
@@ -384,9 +386,9 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_thrusters(), array(
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getThrusters(), array(
             'Thruster' => array(array('Type'=>'Thruster')),
         ));
     }
@@ -431,9 +433,9 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_tank_capacity_by_type(), array(
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getTankCapacityByType(), array(
             'Fuel' => 6000.0,
             'Oxygen' => 9000.0,
             'Water' => 12000.0,
@@ -441,6 +443,10 @@ END';
             'WasteWater' => 9000.0,
             'CarbonDioxide' => 12000.0,
             'Deuterium' => 0.0,
+            'MetreonGas' => 0.0,
+            'RefinedMetreon' => 0.0,
+            'HyperspaceIsotopes' => 0.0,
+            'StableIsotopes' => 0.0,
         ));
     }
 
@@ -498,16 +504,16 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\TheLastStarship\ShipFile");
-        $this->assertTrue($file->section_exists('Objects'));
-        $this->assertEquals($file->get_generator_count_and_output(), array(102.835065, array('Reactor' => 1, 'FusionReactor' => 2)));
+        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertTrue($file->sectionExists('Objects'));
+        $this->assertEquals($file->getGeneratorCountAndOutput(), array(102.835065, array('Reactor' => 1, 'FusionReactor' => 2)));
     }
 
     public function testCanGetCellInfo() {
         $ship = str_replace('        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', '        BEGIN ,          Hull false  Interior false  Habitation flase  Floor false  END
         BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', static::$EXAMPLE_SHIP);
         $file = new ShipFile($ship);
-        $this->assertEquals($file->get_cell_info(), array(
+        $this->assertEquals($file->getCellInfo(), array(
             'Hull' => 258,
             'Interior' => 200,
             'Habitation' => 196,

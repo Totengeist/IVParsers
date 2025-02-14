@@ -37,7 +37,7 @@ class IVFile extends Section {
      * @param string[]        $subfiles  an array of IVFile-inheriting classes and their paths
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array()) {
-        parent::__construct('', self::prepare_structure($structure), $level, $subfiles);
+        parent::__construct('', self::prepareStructure($structure), $level, $subfiles);
     }
 
     /**
@@ -51,7 +51,7 @@ class IVFile extends Section {
      *
      * @return string[] a cleaned structure
      */
-    public static function prepare_structure($structure) {
+    public static function prepareStructure($structure) {
         if (is_string($structure)) {
             $result = preg_split('/\r?\n/', $structure);
             $structure = ($result === false) ? array($structure) : $result;
@@ -67,14 +67,14 @@ class IVFile extends Section {
      *
      * @return bool is it a valid file?
      */
-    public function is_valid() {
+    public function isValid() {
         foreach (static::$REQUIRED_CONTENT as $content) {
             if (!isset($this->content[$content])) {
                 return false;
             }
         }
         foreach (static::$REQUIRED_SECTIONS as $section) {
-            if (!$this->section_exists($section)) {
+            if (!$this->sectionExists($section)) {
                 return false;
             }
         }
@@ -93,13 +93,13 @@ class IVFile extends Section {
      *
      * @return bool is it a valid file structure?
      */
-    public static function is_valid_structure($structure, $level = 0, $subfiles = null) {
+    public static function isValidStructure($structure, $level = 0, $subfiles = null) {
         try {
             $class = get_called_class();
             if ($subfiles === null) {
-                $file = new $class($structure, $level);
+                new $class($structure, $level);
             } else {
-                $file = new $class($structure, $level, $subfiles);
+                new $class($structure, $level, $subfiles);
             }
         } catch (InvalidFileException $ex) {
             return false;
@@ -113,7 +113,7 @@ class IVFile extends Section {
      *
      * @return string the file type
      */
-    public function file_type() {
+    public function fileType() {
         return static::$FILE_TYPE;
     }
 
@@ -124,7 +124,7 @@ class IVFile extends Section {
      *
      * @return string|false the file type or false
      */
-    public static function check_file_type($file) {
+    public static function checkFileType($file) {
         try {
             new IVFile($file);
         } catch (InvalidFileException $e) {
@@ -134,6 +134,7 @@ class IVFile extends Section {
         if ($files === false) {
             return false;
         }
+        $filetype = static::$FILE_TYPE;
         foreach ($files as $class_file) {
             $class = str_replace(__DIR__ . '/../src/', '', $class_file);
             $class = str_replace('.php', '', $class);
@@ -145,14 +146,16 @@ class IVFile extends Section {
                 include_once $class_file;
             }
             try {
+                /** @var IVFile $iv_file */
                 $iv_file = new $class($file);
             } catch (InvalidFileException $e) {
                 continue;
             }
 
-            return $iv_file->file_type(); /* @phpstan-ignore-line */
+            $filetype = $iv_file->fileType();
+            break;
         }
 
-        return static::$FILE_TYPE;
+        return $filetype;
     }
 }

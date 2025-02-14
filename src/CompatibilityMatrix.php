@@ -24,7 +24,7 @@ class CompatibilityMatrix {
      *
      * @return void
      */
-    public function build_compatibility_matrix($json) {
+    public function buildCompatibilityMatrix($json) {
         /** @var array<string, array<string, array<string, array<string, string[]>>>>|null $initial */
         $initial = json_decode($json, true);
 
@@ -36,9 +36,9 @@ class CompatibilityMatrix {
         foreach ($initial['versions'] as $version => $categories) {
             foreach ($categories as $category => $data) {
                 if (isset($previous[$category])) {
-                    $previous[$category] = $this->update_category($data, $previous[$category]);
+                    $previous[$category] = $this->updateCategory($data, $previous[$category]);
                 } else {
-                    $previous[$category] = $this->update_category($data);
+                    $previous[$category] = $this->updateCategory($data);
                 }
             }
             $this->matrix[$version] = $previous;
@@ -53,7 +53,7 @@ class CompatibilityMatrix {
      *
      * @return string[]
      */
-    public function update_category($diff, $original = null) {
+    public function updateCategory($diff, $original = null) {
         if ($original == null) {
             $original = array();
         }

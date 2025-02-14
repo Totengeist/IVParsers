@@ -25,7 +25,7 @@ class SaveFile extends IVFile {
      */
     public function __construct($structure = array(), $level = 0, $subfiles = array('/Layer' => 'Totengeist\IVParser\TheLastStarship\ShipFile')) {
         parent::__construct($structure, $level, $subfiles);
-        if (!$this->is_valid() && $structure !== array()) {
+        if (!$this->isValid() && $structure !== array()) {
             throw new InvalidFileException('save');
         }
     }
@@ -35,10 +35,10 @@ class SaveFile extends IVFile {
      *
      * @return ShipFile[] the ship files
      */
-    public function get_layers() {
-        if ($this->section_exists('Layer')) {
+    public function getLayers() {
+        if ($this->sectionExists('Layer')) {
             /** @var ShipFile[] $layers */
-            $layers = $this->get_repeatable_section('Layer');
+            $layers = $this->getRepeatableSection('Layer');
 
             return $layers;
         }
@@ -53,12 +53,12 @@ class SaveFile extends IVFile {
      *
      * @return ShipFile[] the ship files
      */
-    public function get_ships($type = null) {
+    public function getShips($type = null) {
         if ($type == null) {
-            return $this->get_layers();
+            return $this->getLayers();
         }
         $ships = array();
-        foreach ($this->get_layers() as $ship) {
+        foreach ($this->getLayers() as $ship) {
             if ($ship->content['Type'] == $type) {
                 $ships[] = $ship;
             }
@@ -72,12 +72,12 @@ class SaveFile extends IVFile {
      *
      * @return Section[] the mission information
      */
-    public function get_missions() {
-        if (!$this->section_exists('Missions/Missions')) {
+    public function getMissions() {
+        if (!$this->sectionExists('Missions/Missions')) {
             return array();
         }
         $missions = array();
-        $section = $this->get_unique_section('Missions/Missions');
+        $section = $this->getUniqueSection('Missions/Missions');
         if ($section == null) {
             return array();
         }
@@ -96,9 +96,9 @@ class SaveFile extends IVFile {
      *
      * @return int[] the galaxy information
      */
-    public function get_galaxy_info() {
+    public function getGalaxyInfo() {
         $info = array();
-        $galaxy = $this->get_unique_section('Galaxy')->content;
+        $galaxy = $this->getUniqueSection('Galaxy')->content;
         $info['SectorCount'] = isset($galaxy['SectorCount']) ? intval($galaxy['SectorCount']) : 0;
         $info['CurrentSystem'] = intval($galaxy['CurrentSystem']);
         $info['EntrySystem'] = isset($galaxy['EntrySystem']) ? intval($galaxy['EntrySystem']) : -1;
@@ -115,7 +115,7 @@ class SaveFile extends IVFile {
      *
      * @return int the version of the save file
      */
-    public function get_save_version() {
+    public function getSaveVersion() {
         if (isset($this->content['SaveVersion'])) {
             return intval($this->content['SaveVersion']);
         }
@@ -128,12 +128,12 @@ class SaveFile extends IVFile {
      *
      * @return void
      */
-    public function print_info() {
-        if ($this->section_exists('Layer')) {
-            $all_ships = count($this->get_layers());
-            $fleet = $this->get_ships('FriendlyShip');
+    public function printInfo() {
+        if ($this->sectionExists('Layer')) {
+            $all_ships = count($this->getLayers());
+            $fleet = $this->getShips('FriendlyShip');
             $fleet_cnt = count($fleet);
-            $hostiles = count($this->get_ships('HostileShip'));
+            $hostiles = count($this->getShips('HostileShip'));
             $ships = array();
             foreach ($fleet as $ship) {
                 $ships[] = $ship->content['Name'];
@@ -144,12 +144,12 @@ class SaveFile extends IVFile {
             $hostiles = 0;
             $ships = array();
         }
-        $galaxy = $this->get_galaxy_info();
+        $galaxy = $this->getGalaxyInfo();
 
         $template = 'Your verison %d save file has %2d active missions, %2d ships in your fleet. The current sector is %2d. The current system (%3d) has %2d neutral and %2d hostile ships. Your fleet contains: %s.';
         echo sprintf($template,
-            $this->get_save_version(),
-            count($this->get_missions()),
+            $this->getSaveVersion(),
+            count($this->getMissions()),
             $fleet_cnt,
             $galaxy['SectorCount'],
             $galaxy['CurrentSystem'],
