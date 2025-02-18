@@ -15,8 +15,8 @@ use Totengeist\IVParser\Section;
  */
 class DefinitionsFile extends IVFile {
     /** @var string[] paths of sections that must exist for it to be a valid file */
-    protected static $REQUIRED_SECTIONS = array('Definition');
-    protected static $FILE_TYPE = 'application/tls-definitions+introversion';
+    protected static $requiredSections = array('Definition');
+    protected static $fileType = 'application/tls-definitions+introversion';
 
     /**
      * An intermediary constructor.
@@ -69,7 +69,7 @@ class DefinitionsFile extends IVFile {
  */
 class Definition extends Section {
     /** @var string[] paths of sections that must exist for it to be a valid file */
-    protected static $REQUIRED_SECTIONS = array('Equipment');
+    protected static $requiredSections = array('Equipment');
 
     /**
      * An intermediary constructor.

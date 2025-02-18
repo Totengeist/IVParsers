@@ -10,8 +10,8 @@ use Totengeist\IVParser\Exception\InvalidFileException;
 use Totengeist\IVParser\IVFile;
 
 class ShipFile extends IVFile {
-    protected static $REQUIRED_SECTIONS = array('Habitation');
-    protected static $FILE_TYPE = 'application/tls-ship+introversion';
+    protected static $requiredSections = array('Habitation');
+    protected static $fileType = 'application/tls-ship+introversion';
     /**
      * The types of ships available in the game.
      *
@@ -23,26 +23,26 @@ class ShipFile extends IVFile {
      *
      * @var string[]
      */
-    public static $SHIPS = array('FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict');
+    public static $ships = array('FriendlyShip', 'HostileShip', 'ShipForSale', 'NeutralShip', 'Derelict');
 
     /** @var string[] */
-    public static $WEAPONS = array('GatlingGun', 'Cannon', 'Railgun');
+    public static $weapons = array('GatlingGun', 'Cannon', 'Railgun');
     /** @var string[] */
-    public static $ENGINES = array('Engine');
+    public static $engines = array('Engine');
     /** @var string[] */
-    public static $POWER = array('Reactor', 'FusionReactor');
+    public static $power = array('Reactor', 'FusionReactor');
     /** @var string[] */
-    public static $LOGISTICS = array('MiningLaser', 'DroneBay');
+    public static $logistics = array('MiningLaser', 'DroneBay');
     /** @var string[] */
-    public static $THRUSTERS = array('Thruster');
+    public static $thrusters = array('Thruster');
     /** @var string[] */
-    public static $CELLS = array('Hull', 'Interior', 'Floor', 'Habitation', 'Armour');
+    public static $cells = array('Hull', 'Interior', 'Floor', 'Habitation', 'Armour');
     /** @var string[] */
-    public static $CELL_TYPES = array('Storage');
+    public static $cellTypes = array('Storage');
     /** @var string[] */
-    public static $TANKS = array('TinyTank', 'SmallTank', 'Tank');
+    public static $tanks = array('TinyTank', 'SmallTank', 'Tank');
     /** @var string[] */
-    public static $RESOURCES = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium', 'MetreonGas', 'RefinedMetreon', 'HyperspaceIsotopes', 'StableIsotopes');
+    public static $resources = array('Fuel', 'Oxygen', 'Water', 'Sewage', 'WasteWater', 'CarbonDioxide', 'Deuterium', 'MetreonGas', 'RefinedMetreon', 'HyperspaceIsotopes', 'StableIsotopes');
 
     /**
      * An intermediary constructor.
@@ -209,7 +209,7 @@ class ShipFile extends IVFile {
     public function getTankCapacityByType() {
         $tanks = array();
 
-        foreach (static::$RESOURCES as $resource) {
+        foreach (static::$resources as $resource) {
             $tanks[$resource] = 0.0;
         }
 
@@ -271,7 +271,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> weapons, grouped by type
      */
     public function getWeapons() {
-        return $this->getItemsByType(static::$WEAPONS);
+        return $this->getItemsByType(static::$weapons);
     }
 
     /**
@@ -280,7 +280,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> engines, grouped by type
      */
     public function getEngines() {
-        return $this->getItemsByType(static::$ENGINES);
+        return $this->getItemsByType(static::$engines);
     }
 
     /**
@@ -289,7 +289,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> logistics equipment, grouped by type
      */
     public function getLogistics() {
-        return $this->getItemsByType(static::$LOGISTICS);
+        return $this->getItemsByType(static::$logistics);
     }
 
     /**
@@ -298,7 +298,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> generators, grouped by type
      */
     public function getGenerators() {
-        return $this->getItemsByType(static::$POWER);
+        return $this->getItemsByType(static::$power);
     }
 
     /**
@@ -307,7 +307,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> thrusters, grouped by type
      */
     public function getThrusters() {
-        return $this->getItemsByType(static::$THRUSTERS);
+        return $this->getItemsByType(static::$thrusters);
     }
 
     /**
@@ -316,7 +316,7 @@ class ShipFile extends IVFile {
      * @return array<string, array<string[]>> tanks, grouped by type
      */
     public function getTanks() {
-        return $this->getItemsByType(static::$TANKS);
+        return $this->getItemsByType(static::$tanks);
     }
 
     /**
@@ -367,9 +367,9 @@ class ShipFile extends IVFile {
                 $types[$name] = array();
             } else {
                 foreach ($cell->content as $key => $type) {
-                    if (in_array($key, static::$CELLS)) {
+                    if (in_array($key, static::$cells)) {
                         $types[$name][] = $key;
-                    } elseif (in_array($key, static::$CELL_TYPES)) {
+                    } elseif (in_array($key, static::$cellTypes)) {
                         $key = 'Storage ' . $type;
                         $types[$name][] = $key;
                     } else {
@@ -381,7 +381,7 @@ class ShipFile extends IVFile {
         $typekeys = array_keys($types);
         $cell_width = strlen($typekeys[count($typekeys)-1])+1;
 
-        foreach ($this->getUniqueSection('GridMap/Cells')->content as $cellk => $cell) {
+        foreach ($this->getUniqueSection('GridMap/Cells')->content as $cell) {
             for ($i = 0; $i < strlen($cell); $i += $cell_width) {
                 $char = trim(substr($cell, $i, $cell_width));
                 if (in_array($char, array_keys($types))) {
@@ -438,8 +438,6 @@ class ShipFile extends IVFile {
                 if ($item != null) {
                     if (isset($object->content[$item])) {
                         $content[] = $object->content[$item];
-                    } else {
-                        continue;
                     }
                 } else {
                     $content[] = $object->content;

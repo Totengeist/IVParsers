@@ -13,13 +13,13 @@ abstract class Bug {
      *
      * @var string
      */
-    protected static $NAME = 'Untitled';
+    protected static $name = 'Untitled';
     /**
      * A description of the bug.
      *
      * @var string
      */
-    protected static $DESCRIPTION = 'No description provided.';
+    protected static $description = 'No description provided.';
 
     /**
      * Retrieve metadata for the bug.
@@ -27,7 +27,7 @@ abstract class Bug {
      * @return string[]
      */
     public static function getMetadata() {
-        return array(static::$NAME, static::$DESCRIPTION);
+        return array(static::$name, static::$description);
     }
 
     /**

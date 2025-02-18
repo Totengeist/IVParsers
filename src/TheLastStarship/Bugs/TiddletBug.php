@@ -17,17 +17,17 @@ class TiddletBug extends TLSBug {
      *
      * @var string
      */
-    protected static $NAME = 'Tiddlet Bug';
+    protected static $name = 'Tiddlet Bug';
     /**
      * A description of the bug.
      *
      * @var string
      */
-    protected static $DESCRIPTION = 'Tiddlets that sustained damage are not accepted by The Trouble with Tiddlets and the mission gets stuck.';
+    protected static $description = 'Tiddlets that sustained damage are not accepted by The Trouble with Tiddlets and the mission gets stuck.';
     /** @var bool does the bug apply to Ship files? */
-    protected static $IS_SHIP_BUG = true;
+    protected static $isShipBug = true;
     /** @var bool does the bug apply to Save files? */
-    protected static $IS_SAVE_BUG = true;
+    protected static $isSaveBug = true;
 
     /**
      * Check if the current file is affected by this bug.

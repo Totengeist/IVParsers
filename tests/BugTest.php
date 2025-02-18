@@ -11,7 +11,7 @@ class BugTest extends TestCase {
      *
      * @SuppressWarnings("php:S1131")
      */
-    public static $EXAMPLE_SHIP = '
+    public static $exampleShip = '
 Id                   0  
 Name                 Empty  
 Type                 FriendlyShip  
@@ -68,7 +68,7 @@ END
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship1 = static::$EXAMPLE_SHIP . '
+        $ship1 = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 0]"      
@@ -80,7 +80,7 @@ END';
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship2 = static::$EXAMPLE_SHIP . '
+        $ship2 = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 0]"      

@@ -6,13 +6,13 @@ use Totengeist\IVParser\TheLastStarship\ShipFile;
 
 class ShipFileTest extends TestCase {
     /** @var string */
-    public static $FILE_CLASS = "Totengeist\IVParser\TheLastStarship\ShipFile";
+    public static $fileClass = "Totengeist\IVParser\TheLastStarship\ShipFile";
     /**
      * @var string
      *
      * @SuppressWarnings("php:S1131")
      */
-    public static $EXAMPLE_SHIP = '
+    public static $exampleShip = '
 Id                   0  
 Name                 Empty  
 Type                 FriendlyShip  
@@ -67,30 +67,29 @@ END
 
     public function testCanCreateEmptyShipFile() {
         $file = new ShipFile();
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $this->assertEquals(static::$fileClass, get_class($file));
     }
 
     public function testCanCheckValidShipStructure() {
-        $this->assertTrue(ShipFile::isValidStructure(static::$EXAMPLE_SHIP));
+        $this->assertTrue(ShipFile::isValidStructure(static::$exampleShip));
     }
 
     public function testCanCheckInvalidShipStructure() {
-        $ship = str_replace('BEGIN Habitation SewageTimer 0.068042416666656891  END', '', static::$EXAMPLE_SHIP);
+        $ship = str_replace('BEGIN Habitation SewageTimer 0.068042416666656891  END', '', static::$exampleShip);
         $this->assertFalse(ShipFile::isValidStructure($ship));
     }
 
     public function testCanCreateFullShipFile() {
-        $file = new ShipFile(static::$EXAMPLE_SHIP);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $file = new ShipFile(static::$exampleShip);
         $this->assertTrue($file->sectionExists('Deliveries'));
-        $this->assertEquals($file->getSection('Deliveries')->content['Timer'], '0.055459458380937576');
+        $this->assertEquals('0.055459458380937576', $file->getSection('Deliveries')->content['Timer']);
     }
 
     public function testCanCreateShipWithObjectsSection() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 0]"      
@@ -107,18 +106,17 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getObjectCount('DockingPort'), 1);
-        $this->assertEquals($file->getObjectContent('DockingPort'), array(array('Id' => '9', 'Type' => 'DockingPort')));
-        $this->assertEquals($file->getObjectContent('DockingPort', 'Id'), array('9'));
+        $this->assertEquals(1, $file->getObjectCount('DockingPort'));
+        $this->assertEquals(array(array('Id' => '9', 'Type' => 'DockingPort')), $file->getObjectContent('DockingPort'));
+        $this->assertEquals(array('9'), $file->getObjectContent('DockingPort', 'Id'));
     }
 
     public function testDuplicateObjectIdsRetrieveLastObject() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 0]"      
@@ -132,28 +130,26 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getObjectCount('GatlingGun'), 0);
-        $this->assertEquals($file->getObjectCount('DockingPort'), 1);
-        $this->assertEquals($file->getObjectContent('DockingPort'), array(array('Id' => '9', 'Type' => 'DockingPort')));
-        $this->assertEquals($file->getObjectContent('DockingPort', 'Id'), array('9'));
+        $this->assertEquals(0, $file->getObjectCount('GatlingGun'));
+        $this->assertEquals(1, $file->getObjectCount('DockingPort'));
+        $this->assertEquals(array(array('Id' => '9', 'Type' => 'DockingPort')), $file->getObjectContent('DockingPort'));
+        $this->assertEquals(array('9'), $file->getObjectContent('DockingPort', 'Id'));
     }
 
     public function testCanQueryObjectsOnShipWithoutObjectsSection() {
-        $file = new ShipFile(static::$EXAMPLE_SHIP);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
+        $file = new ShipFile(static::$exampleShip);
         $this->assertFalse($file->sectionExists('Objects'));
-        $this->assertEquals($file->getObjectCount('NotExistGun'), 0);
-        $this->assertEquals($file->getObjectContent('NotExistGun'), array());
-        $this->assertEquals(count($file->getWeapons()), 0);
+        $this->assertEquals(0, $file->getObjectCount('NotExistGun'));
+        $this->assertEquals(array(), $file->getObjectContent('NotExistGun'));
+        $this->assertEquals(0, count($file->getWeapons()));
     }
 
     public function testCanGetItemsByTypeWithString() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -165,18 +161,17 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getItemsByType('TinyTank'), array(
+        $this->assertEquals(array(
             'TinyTank' => array(array('Type'=>'TinyTank')),
-        ));
+        ), $file->getItemsByType('TinyTank'));
     }
 
     public function testCanGetItemCountsByType() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -200,20 +195,19 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getItemCountsByType(array('TinyTank', 'SmallTank', 'Tank')), array(
+        $this->assertEquals(array(
             'TinyTank' => 2,
             'SmallTank' => 3,
             'Tank' => 1,
-        ));
+        ), $file->getItemCountsByType(array('TinyTank', 'SmallTank', 'Tank')));
     }
 
     public function testCanGetWeapons() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     BEGIN "[i 8]"      
         Id                   21785  
@@ -308,12 +302,11 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getObjectCount('GatlingGun'), 2);
-        $this->assertEquals($file->getObjectCount('NotExistGun'), 0);
-        $this->assertEquals($file->getObjectContent('NotExistGun'), array());
-        $this->assertEquals($file->getObjectContent('Railgun'), array(array(
+        $this->assertEquals(2, $file->getObjectCount('GatlingGun'));
+        $this->assertEquals(0, $file->getObjectCount('NotExistGun'));
+        $this->assertEquals(array(), $file->getObjectContent('NotExistGun'));
+        $this->assertEquals(array(array(
             'Id' => '22086',
             'Type' => 'Railgun',
             'Position.x' => '17.00000',
@@ -325,15 +318,15 @@ END';
             'Height' => '3',
             'Orientation' => 'Right',
             'Job' => '242',
-        )));
-        $this->assertEquals(count($file->getWeapons()), 3);
+        )), $file->getObjectContent('Railgun'));
+        $this->assertEquals(3, count($file->getWeapons()));
     }
 
     public function testCanGetEngines() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -342,18 +335,17 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getEngines(), array(
+        $this->assertEquals(array(
             'Engine' => array(array('Type'=>'Engine')),
-        ));
+        ), $file->getEngines());
     }
 
     public function testCanGetLogistics() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -365,19 +357,18 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getLogistics(), array(
+        $this->assertEquals(array(
             'DroneBay' => array(array('Type'=>'DroneBay')),
             'MiningLaser' => array(array('Type'=>'MiningLaser')),
-        ));
+        ), $file->getLogistics());
     }
 
     public function testCanGetThrusters() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -386,18 +377,17 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getThrusters(), array(
+        $this->assertEquals(array(
             'Thruster' => array(array('Type'=>'Thruster')),
-        ));
+        ), $file->getThrusters());
     }
 
     public function testCanGetTankCapacitiesByResource() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 1]"      
@@ -433,9 +423,8 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getTankCapacityByType(), array(
+        $this->assertEquals(array(
             'Fuel' => 6000.0,
             'Oxygen' => 9000.0,
             'Water' => 12000.0,
@@ -447,14 +436,14 @@ END';
             'RefinedMetreon' => 0.0,
             'HyperspaceIsotopes' => 0.0,
             'StableIsotopes' => 0.0,
-        ));
+        ), $file->getTankCapacityByType());
     }
 
     public function testCanGetGeneratorCountAndCapacity() {
         /**
          * @SuppressWarnings("php:S1131")
          */
-        $ship = static::$EXAMPLE_SHIP . '
+        $ship = static::$exampleShip . '
 BEGIN Objects    
     Size                 1  
     BEGIN "[i 158]"    
@@ -504,26 +493,25 @@ BEGIN Objects
 END';
 
         $file = new ShipFile($ship);
-        $this->assertEquals(get_class($file), static::$FILE_CLASS);
         $this->assertTrue($file->sectionExists('Objects'));
-        $this->assertEquals($file->getGeneratorCountAndOutput(), array(102.835065, array('Reactor' => 1, 'FusionReactor' => 2)));
+        $this->assertEquals(array(102.835065, array('Reactor' => 1, 'FusionReactor' => 2)), $file->getGeneratorCountAndOutput());
     }
 
     public function testCanGetCellInfo() {
         $ship = str_replace('        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', '        BEGIN ,          Hull false  Interior false  Habitation false  Floor false  END
-        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', static::$EXAMPLE_SHIP);
+        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', static::$exampleShip);
         $file = new ShipFile($ship);
-        $this->assertEquals($file->getCellInfo(), array(
+        $this->assertEquals(array(
             'Hull' => 258,
             'Interior' => 200,
             'Habitation' => 196,
             'Floor' => 196,
             'HabitationCapacity' => 21,
-        ));
+        ), $file->getCellInfo());
     }
 
     public function testCanGetAndSetMetaData() {
-        $file = new ShipFile(static::$EXAMPLE_SHIP);
+        $file = new ShipFile(static::$exampleShip);
         $this->assertEquals(0, $file->getId());
         $this->assertEquals('Empty', $file->getName());
         $this->assertEquals('', $file->getAuthor());

@@ -19,11 +19,11 @@ use Totengeist\IVParser\Exception\InvalidFileException;
  */
 class IVFile extends Section {
     /** @var string[] paths of sections that must exist for it to be a valid file */
-    protected static $REQUIRED_SECTIONS = array();
+    protected static $requiredSections = array();
     /** @var string[] content items that must exist for it to be a valid file */
-    protected static $REQUIRED_CONTENT = array();
+    protected static $requiredContent = array();
     /** @var string the file type identifier */
-    protected static $FILE_TYPE = 'application/introversion';
+    protected static $fileType = 'application/introversion';
 
     /**
      * An intermediary constructor.
@@ -68,12 +68,12 @@ class IVFile extends Section {
      * @return bool is it a valid file?
      */
     public function isValid() {
-        foreach (static::$REQUIRED_CONTENT as $content) {
+        foreach (static::$requiredContent as $content) {
             if (!isset($this->content[$content])) {
                 return false;
             }
         }
-        foreach (static::$REQUIRED_SECTIONS as $section) {
+        foreach (static::$requiredSections as $section) {
             if (!$this->sectionExists($section)) {
                 return false;
             }
@@ -97,15 +97,15 @@ class IVFile extends Section {
         try {
             $class = get_called_class();
             if ($subfiles === null) {
-                new $class($structure, $level);
+                $file = new $class($structure, $level);
             } else {
-                new $class($structure, $level, $subfiles);
+                $file = new $class($structure, $level, $subfiles);
             }
         } catch (InvalidFileException $ex) {
             return false;
         }
 
-        return true;
+        return get_class($file) == $class;
     }
 
     /**
@@ -114,7 +114,7 @@ class IVFile extends Section {
      * @return string the file type
      */
     public function fileType() {
-        return static::$FILE_TYPE;
+        return static::$fileType;
     }
 
     /**
@@ -134,7 +134,7 @@ class IVFile extends Section {
         if ($files === false) {
             return false;
         }
-        $filetype = static::$FILE_TYPE;
+        $filetype = static::$fileType;
         foreach ($files as $class_file) {
             $class = str_replace(__DIR__ . '/../src/', '', $class_file);
             $class = str_replace('.php', '', $class);

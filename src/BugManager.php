@@ -9,7 +9,7 @@ namespace Totengeist\IVParser;
  */
 abstract class BugManager {
     /** @var string[] A list of class paths for available bugs */
-    protected static $BUGS = array(
+    protected static $bugs = array(
         'Totengeist\IVParser\TheLastStarship\Bugs\TiddletBug',
     );
 
@@ -23,7 +23,7 @@ abstract class BugManager {
     public static function getBugsFromGame($game) {
         $game = 'Totengeist\IVParser\\' . $game;
         $bugs = array();
-        foreach (static::$BUGS as $bug) {
+        foreach (static::$bugs as $bug) {
             if (strpos($bug, $game) === 0) {
                 $bugs[] = $bug;
             }

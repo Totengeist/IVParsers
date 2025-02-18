@@ -202,7 +202,7 @@ class Section {
      */
     public function sectionExists($path) {
         try {
-            $section = $this->getSection($path);
+            $this->getSection($path);
         } catch (SectionNotFoundException $ex) {
             return false;
         }

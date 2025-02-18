@@ -8,8 +8,8 @@ class IVFileTest extends TestCase {
     public function testCanCreateEmptyIVFile() {
         $file = new IVFile();
 
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\IVFile");
-        $this->assertEquals($file->fileType(), 'application/introversion');
+        $this->assertEquals("Totengeist\IVParser\IVFile", get_class($file));
+        $this->assertEquals('application/introversion', $file->fileType());
     }
 
     public function testCanCreateFullIVFile() {
@@ -47,10 +47,10 @@ BEGIN Deliveries
 END
 ');
 
-        $this->assertEquals(get_class($file), "Totengeist\IVParser\IVFile");
+        $this->assertEquals("Totengeist\IVParser\IVFile", get_class($file));
         $this->assertTrue($file->sectionExists('Deliveries'));
-        $this->assertEquals($file->getSection('Deliveries')->content['Timer'], '0.055459458380937576');
-        $this->assertEquals(IVFile::checkFileType($file->toString()), 'application/tls-ship+introversion');
+        $this->assertEquals('0.055459458380937576', $file->getSection('Deliveries')->content['Timer']);
+        $this->assertEquals('application/tls-ship+introversion', IVFile::checkFileType($file->toString()));
     }
 
     public function testStructureIsValid() {
@@ -66,8 +66,8 @@ END
 }
 
 class TestIVFile extends IVFile {
-    protected static $REQUIRED_CONTENT = array('Key1');
-    protected static $REQUIRED_SECTIONS = array('TestSection');
+    protected static $requiredContent = array('Key1');
+    protected static $requiredSections = array('TestSection');
 
     /**
      * @param string[] $structure the structure of the section and its subsections
