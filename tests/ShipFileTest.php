@@ -510,7 +510,7 @@ END';
     }
 
     public function testCanGetCellInfo() {
-        $ship = str_replace('        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', '        BEGIN ,          Hull false  Interior false  Habitation flase  Floor false  END
+        $ship = str_replace('        BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', '        BEGIN ,          Hull false  Interior false  Habitation false  Floor false  END
         BEGIN ,          Hull true  Interior true  Habitation true  Floor true  END', static::$EXAMPLE_SHIP);
         $file = new ShipFile($ship);
         $this->assertEquals($file->getCellInfo(), array(
@@ -520,5 +520,29 @@ END';
             'Floor' => 196,
             'HabitationCapacity' => 21,
         ));
+    }
+
+    public function testCanGetAndSetMetaData() {
+        $file = new ShipFile(static::$EXAMPLE_SHIP);
+        $this->assertEquals(0, $file->getId());
+        $this->assertEquals('Empty', $file->getName());
+        $this->assertEquals('', $file->getAuthor());
+        $this->assertEquals('FriendlyShip', $file->getType());
+        $this->assertEquals(array(0.0, 0.0), $file->getPosition());
+        $this->assertEquals(0.0, $file->getRotation());
+
+        $file->setId(235);
+        $file->setName('Science Vessel');
+        $file->setAuthor('John Doe');
+        $file->setType('Hostile');
+        $file->setPosition(34.1234, 12.483);
+        $file->setRotation(123.54);
+
+        $this->assertEquals(235, $file->getId());
+        $this->assertEquals('Science Vessel', $file->getName());
+        $this->assertEquals('John Doe', $file->getAuthor());
+        $this->assertEquals('Hostile', $file->getType());
+        $this->assertEquals(array(34.1234, 12.483), $file->getPosition());
+        $this->assertEquals(123.54, $file->getRotation());
     }
 }

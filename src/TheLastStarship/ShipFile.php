@@ -61,6 +61,147 @@ class ShipFile extends IVFile {
     }
 
     /**
+     * Get the ship's ID.
+     *
+     * @return int the ID of the ship
+     */
+    public function getId() {
+        return (int) $this->content['Id'];
+    }
+
+    /**
+     * Get the ship's name.
+     *
+     * @return string the name of the ship
+     */
+    public function getName() {
+        return $this->content['Name'];
+    }
+
+    /**
+     * Get the ship's author.
+     *
+     * @return string the name of the ship's author
+     */
+    public function getAuthor() {
+        return isset($this->content['Author']) ? $this->content['Author'] : '';
+    }
+
+    /**
+     * Get the ship's type.
+     *
+     * @return string the name of the ship's type
+     */
+    public function getType() {
+        return isset($this->content['Type']) ? $this->content['Type'] : '';
+    }
+
+    /**
+     * Get the ship's position.
+     *
+     * @return float[] an array containing the x and y position of the ship
+     */
+    public function getPosition() {
+        return array(
+            isset($this->content['Offset.x']) ? (float) $this->content['Offset.x'] : 0.0,
+            isset($this->content['Offset.y']) ? (float) $this->content['Offset.y'] : 0.0
+        );
+    }
+
+    /**
+     * Get the ship's rotation.
+     *
+     * @return float the rotation of the ship
+     */
+    public function getRotation() {
+        return isset($this->content['Rotation']) ? (float) $this->content['Rotation'] : 0.0;
+    }
+
+    /**
+     * Get the ship file's save version number.
+     *
+     * Save files during the playtest did not have version number, so we return 0 if no version is
+     * found.
+     *
+     * @return int the version of the ship file
+     */
+    public function getSaveVersion() {
+        if (isset($this->content['SaveVersion'])) {
+            return intval($this->content['SaveVersion']);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Change the ship's ID.
+     *
+     * @param int $id the ID of the ship
+     *
+     * @return void
+     */
+    public function setId($id) {
+        $this->content['Id'] = "$id";
+    }
+
+    /**
+     * Change the ship's name.
+     *
+     * @param string $name the name of the ship
+     *
+     * @return void
+     */
+    public function setName($name) {
+        $this->content['Name'] = $name;
+    }
+
+    /**
+     * Change the ship's author.
+     *
+     * @param string $author the name of the ship's author
+     *
+     * @return void
+     */
+    public function setAuthor($author) {
+        $this->content['Author'] = $author;
+    }
+
+    /**
+     * Change the ship's type.
+     *
+     * @param string $type the type of ship
+     *
+     * @return void
+     */
+    public function setType($type) {
+        $this->content['Type'] = $type;
+    }
+
+    /**
+     * Change the ship's position.
+     *
+     * @param float $x the x position of the ship
+     * @param float $y the y position of the ship
+     *
+     * @return void
+     */
+    public function setPosition($x, $y) {
+        $this->content['Offset.x'] = "$x";
+        $this->content['Offset.y'] = "$y";
+    }
+
+    /**
+     * Change the ship's rotation.
+     *
+     * @param float $rotation the rotation of the ship
+     *
+     * @return void
+     */
+    public function setRotation($rotation) {
+        $this->content['Rotation'] = "$rotation";
+    }
+
+    /**
      * Get the overall tank capacity for each type of resource.
      *
      * @return float[] an associative array of resource capacities
@@ -307,21 +448,5 @@ class ShipFile extends IVFile {
         }
 
         return $content;
-    }
-
-    /**
-     * Get the ship file's save version number.
-     *
-     * Save files during the playtest did not have version number, so we return 0 if no version is
-     * found.
-     *
-     * @return int the version of the ship file
-     */
-    public function getSaveVersion() {
-        if (isset($this->content['SaveVersion'])) {
-            return intval($this->content['SaveVersion']);
-        }
-
-        return 0;
     }
 }
