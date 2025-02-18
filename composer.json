@@ -20,7 +20,7 @@
             "src"
         ],
         "psr-4": {
-            "Totengeist\\IVParsers\\": "src/"
+            "Totengeist\\IVParser\\": "src/"
         }
     },
     "autoload-dev": {
