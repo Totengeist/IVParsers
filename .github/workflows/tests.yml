@@ -73,5 +73,6 @@ jobs:
 
     - name: SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@v4
+      if: ${{ matrix.php == '8.2' && matrix.runner == 'ubuntu-22.04' }}
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
