@@ -203,6 +203,19 @@ END';
         ), $file->getItemCountsByType(array('TinyTank', 'SmallTank', 'Tank')));
     }
 
+    public function testCanGetSaveVersion() {
+        $file = new ShipFile(static::$exampleShip);
+        $this->assertEquals(0, $file->getSaveVersion());
+
+        /**
+         * @SuppressWarnings("php:S1131")
+         */
+        $ship = "SaveVersion                   4  \n" . static::$exampleShip;
+
+        $file = new ShipFile($ship);
+        $this->assertEquals(4, $file->getSaveVersion());
+    }
+
     public function testCanGetWeapons() {
         /**
          * @SuppressWarnings("php:S1131")

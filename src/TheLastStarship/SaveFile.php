@@ -31,6 +31,61 @@ class SaveFile extends IVFile {
     }
 
     /**
+     * Retrieve the game mode of the save file.
+     *
+     * @return string
+     */
+    public function getGameMode() {
+        if (isset($this->content['GameMode'])) {
+            return $this->content['GameMode'];
+        }
+
+        return 'Survival';
+    }
+
+    /**
+     * Set the game mode of the save file.
+     *
+     * @param string $mode the game mode to set
+     *
+     * @return void
+     */
+    public function setGameMode($mode) {
+        $this->content['GameMode'] = $mode;
+    }
+
+    /**
+     * Check whether the save supports multi-system simulation.
+     *
+     * @return bool
+     */
+    public function hasMultiSystemSimulation() {
+        if (isset($this->content['MultiSystemSimulation'])) {
+            return 'true' == strtolower($this->content['MultiSystemSimulation']);
+        }
+
+        return false;
+    }
+
+    /**
+     * Enable multi-system simulation.
+     *
+     * @return void
+     */
+    public function enableMultiSystemSimulation() {
+        $this->content['MultiSystemSimulation'] = 'true';
+    }
+
+    /**
+     * Disable multi-system simulation.
+     *
+     * @return void
+     */
+    public function disableMultiSystemSimulation() {
+        $this->content['MultiSystemSimulation'] = 'false';
+    }
+
+    /**
      * Retrieve ships stored in the save file.
      *
      * @return ShipFile[] the ship files
@@ -121,41 +176,5 @@ class SaveFile extends IVFile {
         }
 
         return 0;
-    }
-
-    /**
-     * Debug print function that should be replaced with something more useful.
-     *
-     * @return void
-     */
-    public function printInfo() {
-        if ($this->sectionExists('Layer')) {
-            $all_ships = count($this->getLayers());
-            $fleet = $this->getShips('FriendlyShip');
-            $fleet_cnt = count($fleet);
-            $hostiles = count($this->getShips('HostileShip'));
-            $ships = array();
-            foreach ($fleet as $ship) {
-                $ships[] = $ship->content['Name'];
-            }
-        } else {
-            $all_ships = 0;
-            $fleet_cnt = 0;
-            $hostiles = 0;
-            $ships = array();
-        }
-        $galaxy = $this->getGalaxyInfo();
-
-        $template = 'Your verison %d save file has %2d active missions, %2d ships in your fleet. The current sector is %2d. The current system (%3d) has %2d neutral and %2d hostile ships. Your fleet contains: %s.';
-        echo sprintf($template,
-            $this->getSaveVersion(),
-            count($this->getMissions()),
-            $fleet_cnt,
-            $galaxy['SectorCount'],
-            $galaxy['CurrentSystem'],
-            $all_ships-$fleet_cnt-$hostiles,
-            $hostiles,
-            implode(', ', $ships)
-        );
     }
 }

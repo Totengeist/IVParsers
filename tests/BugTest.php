@@ -93,6 +93,7 @@ END';
         $noBug = new ShipFile($ship1);
         $bug = new ShipFile($ship2);
 
+        $this->assertEquals(array('Tiddlet Bug', 'Tiddlets that sustained damage are not accepted by The Trouble with Tiddlets and the mission gets stuck.'), TiddletBug::getMetadata());
         $this->assertTrue(TiddletBug::isShipBug());
         $this->assertTrue(TiddletBug::isSaveBug());
         $this->assertFalse(TiddletBug::hasBug($noBug));
