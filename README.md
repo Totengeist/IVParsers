@@ -1,5 +1,5 @@
 # Introversion Parsers
-[![Build Status](https://github.com/Totengeist/IVParsers/actions/workflows/tests.yml/badge.svg)](https://github.com/Totengeist/IVParsers/actions/workflows/tests.yml) [![Latest Stable Version](https://poser.pugx.org/totengeist/iv-parsers/v)](https://packagist.org/packages/totengeist/iv-parsers) [![codecov](https://codecov.io/gh/Totengeist/IVParsers/branch/main/graph/badge.svg?token=LBY3KQNRTG)](https://codecov.io/gh/Totengeist/IVParsers) [![Total Downloads](https://poser.pugx.org/totengeist/iv-parsers/downloads)](https://packagist.org/packages/totengeist/iv-parsers) [![Latest Unstable Version](https://poser.pugx.org/totengeist/iv-parsers/v/unstable)](https://packagist.org/packages/totengeist/iv-parsers) [![License](https://poser.pugx.org/totengeist/iv-parsers/license)](https://packagist.org/packages/totengeist/iv-parsers) [![PHP Version Require](https://poser.pugx.org/totengeist/iv-parsers/require/php)](https://packagist.org/packages/totengeist/iv-parsers)
+[![Build Status](https://github.com/Totengeist/IVParsers/actions/workflows/tests.yml/badge.svg)](https://github.com/Totengeist/IVParsers/actions/workflows/tests.yml) [![Latest Stable Version](https://img.shields.io/packagist/v/totengeist/iv-parsers)][4] [![codecov](https://codecov.io/gh/Totengeist/IVParsers/branch/main/graph/badge.svg?token=LBY3KQNRTG)](https://codecov.io/gh/Totengeist/IVParsers) [![Total Downloads](https://img.shields.io/packagist/dt/totengeist/iv-parsers)][4] [![License](https://img.shields.io/packagist/l/totengeist/iv-parsers)][4] [![PHP Version Require](https://img.shields.io/packagist/dependency-v/totengeist/iv-parsers/php)][4]
 
 This library aims to provide parsers for common Introversion file formats. It is currently focused
 on the early access game [The Last Starship][1], but will hopefully include other parsers in the future.
@@ -50,3 +50,4 @@ Please make sure to update tests as appropriate.
  [1]: https://steamcommunity.com/app/1857080
  [2]: https://getcomposer.org/download/
  [3]: https://discord.gg/AcCgj3T5sH
+ [4]: https://packagist.org/packages/totengeist/iv-parsers
